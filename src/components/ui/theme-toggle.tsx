@@ -10,9 +10,10 @@ import { cn } from "@/lib/utils";
 type props = {
     size?: number;
     className?: string;
+    text?: string;
 };
 
-export default function ThemeToggle({ className, size = 5 }: props) {
+export default function ThemeToggle({ className, size = 5, text }: props) {
     const { setTheme, resolvedTheme } = useTheme();
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
     const [mounted, setMounted] = useState<boolean>(false);
@@ -83,7 +84,10 @@ export default function ThemeToggle({ className, size = 5 }: props) {
             >
                 <clipPath id="skiper-btn-2">
                     <motion.path
-                        animate={{ y: isDarkMode ? 10 : 0, x: isDarkMode ? -12 : 0 }}
+                        animate={{
+                            y: isDarkMode ? 10 : 0,
+                            x: isDarkMode ? -12 : 0,
+                        }}
                         transition={{ ease: "easeInOut", duration: 0.35 }}
                         d="M0-5h30a1 1 0 0 0 9 13v24H0Z"
                     />
@@ -116,6 +120,7 @@ export default function ThemeToggle({ className, size = 5 }: props) {
                     </motion.g>
                 </g>
             </svg>
+            {text && <span>{text}</span>}
         </button>
     );
 }
