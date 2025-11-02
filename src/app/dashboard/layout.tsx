@@ -3,8 +3,11 @@
 
 import { SidebarProvider, useSidebar } from "@/hooks/dashboard/use-sidebar";
 import { AnimatePresence, motion } from "motion/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import DashboardSideBar from "@/components/dashboard/DashboardSideBar";
+
+const queryClient = new QueryClient();
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -12,9 +15,11 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return (
-        <SidebarProvider>
-            <LayoutContent>{children}</LayoutContent>
-        </SidebarProvider>
+        <QueryClientProvider client={queryClient}>
+            <SidebarProvider>
+                <LayoutContent>{children}</LayoutContent>
+            </SidebarProvider>
+        </QueryClientProvider>
     );
 }
 
