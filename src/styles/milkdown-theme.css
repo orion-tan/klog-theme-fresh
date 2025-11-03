@@ -1,0 +1,30 @@
+/* 自适应颜色 */
+.milkdown {
+    --crepe-color-background: var(--background-1);
+    --crepe-color-on-background: var(--foreground);
+    --crepe-color-surface: var(--crepe-surface);
+    --crepe-color-surface-low: var(--crepe-surface-low);
+    --crepe-color-on-surface: var(--crepe-on-surface);
+    --crepe-color-on-surface-variant: var(--crepe-on-surface-variant);
+    --crepe-color-outline: var(--crepe-outline);
+    --crepe-color-primary: var(--crepe-primary);
+    --crepe-color-secondary: var(--crepe-secondary);
+    --crepe-color-on-secondary: var(--crepe-on-secondary);
+    --crepe-color-inverse: var(--crepe-inverse);
+    --crepe-color-on-inverse: var(--crepe-on-inverse);
+    --crepe-color-inline-code: var(--crepe-inline-code);
+    --crepe-color-error: var(--crepe-error);
+    --crepe-color-hover: var(--crepe-hover);
+    --crepe-color-selected: var(--crepe-selected);
+    --crepe-color-inline-area: var(--crepe-inline-area);
+
+    --crepe-font-title: "Noto Serif", Cambria, "Times New Roman", Times, serif;
+    --crepe-font-default: "Noto Sans", Arial, Helvetica, sans-serif;
+    --crepe-font-code: "Space Mono", Fira Code, Menlo, Monaco, "Courier New",
+        Courier, monospace;
+
+    --crepe-shadow-1: 0px 1px 3px 1px var(--crepe-shadow-1),
+        0px 1px 2px 0px var(--crepe-shadow-2);
+    --crepe-shadow-2: 0px 2px 6px 2px var(--crepe-shadow-1),
+        0px 1px 2px 0px var(--crepe-shadow-2);
+}

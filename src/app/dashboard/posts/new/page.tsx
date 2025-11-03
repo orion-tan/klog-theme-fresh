@@ -1,27 +1,27 @@
 import type { Metadata } from "next";
 
 import { siteConfig } from "@/lib/config";
-import PostViewTab from "@/components/dashboard/tabs/PostViewTab";
+import PostEditTab from "@/components/dashboard/tabs/PostEditTab";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-    title: `${siteConfig.title} | 文章管理`,
-    description: "后台文章管理",
+    title: `${siteConfig.title} | 新建文章`,
+    description: "新建文章",
 };
 
 function PostViewSkeleton() {
     return (
         <div>
-            <h1 className="text-2xl font-bold text-center">Loading...</h1>
+            <h1 className="text-2xl font-bold text-center">加载中...</h1>
         </div>
     );
 }
 
-export default function PostsPage() {
+export default function PostsNewPage() {
     return (
         <div className="bg-background-1 text-foreground h-full py-8">
             <Suspense fallback={<PostViewSkeleton />}>
-                <PostViewTab />
+                <PostEditTab mode="new" />
             </Suspense>
         </div>
     );

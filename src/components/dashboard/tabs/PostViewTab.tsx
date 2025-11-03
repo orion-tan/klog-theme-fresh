@@ -1,3 +1,5 @@
+// 文章管理界面 Tab 界面
+
 "use client";
 
 import Link from "next/link";
@@ -15,7 +17,6 @@ export default function PostViewTab() {
     // 利用kLogSDK获取数据并分页展示
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [total, setTotal] = useState(0);
 
     const {
         data: pageData,
@@ -35,7 +36,7 @@ export default function PostViewTab() {
     return (
         <div className="flex flex-col gap-4 h-full">
             {/* 顶部大标题 */}
-            <section className="flex flex-col md:flex-row items-start md:items-center md:justify-between mt-8">
+            <section className="flex flex-col md:flex-row items-start md:items-center md:justify-between mt-8 px-4 md:px-8">
                 <h1 className="text-2xl font-bold text-primary">我的文章</h1>
                 <p className="text-primary/90">
                     文章管理界面 Tab 界面，可以在这里管理你的文章
