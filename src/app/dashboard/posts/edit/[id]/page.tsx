@@ -18,18 +18,19 @@ function PostEditSkeleton() {
 }
 
 interface PostEditPageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
-export default function PostEditPage({ params }: PostEditPageProps) {
+export default async function PostEditPage({ params }: PostEditPageProps) {
+    const { id } = await params;
+
     return (
         <div className="bg-background-1 text-foreground h-full py-8">
             <Suspense fallback={<PostEditSkeleton />}>
-                <PostEditTab mode="edit" postId={params.id} />
+                <PostEditTab postId={Number(id)} />
             </Suspense>
         </div>
     );
 }
-

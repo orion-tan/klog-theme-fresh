@@ -2,7 +2,9 @@
 
 "use client";
 
+import { useCallback, useEffect } from "react";
 import { Crepe } from "@milkdown/crepe";
+import { replaceAll } from "@milkdown/utils";
 import { MilkdownProvider, Milkdown, useEditor } from "@milkdown/react";
 
 import "@milkdown/crepe/theme/common/style.css";
@@ -10,6 +12,7 @@ import "@/styles/milkdown-theme.css";
 
 interface CrepeEditorProps {
     value: string;
+    delayValue?: string;
     readonly?: boolean;
     className?: string;
     onChange?: (value: string) => void;
@@ -18,6 +21,7 @@ interface CrepeEditorProps {
 
 export const CrepeEditor = ({
     value,
+    delayValue,
     readonly = false,
     onChange,
     onImageUpload,
@@ -54,6 +58,14 @@ export const CrepeEditor = ({
 
         return crepe;
     });
+
+    const editor = get();
+
+    useEffect(() => {
+        if (delayValue && editor) {
+            editor?.action(replaceAll(delayValue));
+        }
+    }, [delayValue, editor]);
 
     return (
         <div className={className}>

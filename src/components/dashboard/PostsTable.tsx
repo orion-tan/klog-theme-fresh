@@ -1,8 +1,13 @@
+"use client";
+
 // 文章管理列表表格
 import type { Post } from "klog-sdk";
-import Bage from "@/components/ui/bage";
 import Link from "next/link";
+
+import Bage from "@/components/ui/bage";
 import { cn } from "@/lib/utils";
+import { getKLogSDK } from "@/lib/api-request";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PostsTableProps {
     posts: Post[];
@@ -10,6 +15,18 @@ interface PostsTableProps {
 }
 
 export default function PostsTable({ posts, className }: PostsTableProps) {
+    const klogSdk = getKLogSDK();
+    const queryClient = useQueryClient();
+
+    const handleDelete = async (id: number) => {
+        try {
+            await klogSdk.posts.deletePost(id);
+            queryClient.invalidateQueries({ queryKey: ["posts:all"] });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         // 表格宽度自适应，超出添加滚动条
         <table className={cn("w-full overflow-x-auto", className)}>
@@ -89,7 +106,7 @@ export default function PostsTable({ posts, className }: PostsTableProps) {
                         <td>
                             <div className="inline-flex items-center gap-2">
                                 <Link
-                                    href={`/dashboard/posts/${post.id}`}
+                                    href={`/dashboard/posts/edit/${post.id}`}
                                     key={`edit-${post.id}`}
                                 >
                                     <button className="inline-flex items-center justify-center bg-primary px-4 py-2 rounded-sm">
@@ -97,7 +114,10 @@ export default function PostsTable({ posts, className }: PostsTableProps) {
                                     </button>
                                 </Link>
 
-                                <button className="inline-flex items-center justify-center bg-red-500 px-4 py-2 rounded-sm">
+                                <button
+                                    onClick={() => handleDelete(post.id)}
+                                    className="inline-flex items-center justify-center bg-red-500 px-4 py-2 rounded-sm"
+                                >
                                     删除
                                 </button>
                             </div>

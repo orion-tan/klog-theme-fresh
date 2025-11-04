@@ -1,9 +1,9 @@
-// 文章编辑 Tab
+// 文章修改 Tab
 
 "use client";
 
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -15,11 +15,7 @@ import { cn } from "@/lib/utils";
 const postsSchema = z.object({
     title: z.string().min(1, "文章标题不能为空"),
     slug: z.string().min(1, "文章 slug 不能为空"),
-    cover_image_url: z
-        .string()
-        .pipe(z.url("文章封面链接格式错误"))
-        .optional()
-        .or(z.literal("")),
+    cover_image_url: z.string().pipe(z.url("文章封面链接格式错误")).optional(),
     content: z.string().min(1, "文章内容不能为空"),
     excerpt: z.string().min(1, "文章摘要不能为空").optional().or(z.literal("")),
     category_id: z.number().optional(),
@@ -30,7 +26,7 @@ const postsSchema = z.object({
 const defaultPostValues: z.infer<typeof postsSchema> = {
     title: "",
     slug: "",
-    cover_image_url: "",
+    cover_image_url: undefined,
     content: "",
     excerpt: "",
     category_id: undefined,
@@ -38,39 +34,23 @@ const defaultPostValues: z.infer<typeof postsSchema> = {
     status: "draft",
 };
 
-interface PostEditTabProps {
-    postId: number;
-}
-
-export default function PostEditTab({ postId }: PostEditTabProps) {
+export default function PostNewTab() {
+    // 文章内容
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [submitStatus, setSubmitStatus] = useState<
         "draft" | "published" | "archived"
     >("draft");
 
     const queryClient = useQueryClient();
-    const klogSdk = getKLogSDK();
-
-    // 1. 获取文章数据
-    const {
-        data: post,
-        isLoading: isPostLoading,
-        isError: isPostError,
-        error: postError,
-    } = useQuery({
-        queryKey: ["post:detail", postId],
-        queryFn: () => klogSdk.posts.getPost(postId),
-        enabled: postId > 0,
-    });
 
     // 获取分类与标签
     const { data: allCategories } = useQuery({
         queryKey: ["categories:all"],
-        queryFn: () => klogSdk.categories.getCategories(),
+        queryFn: () => getKLogSDK().categories.getCategories(),
     });
-    const { data: allTags } = useQuery({
+    const { data: allTtags } = useQuery({
         queryKey: ["tags:all"],
-        queryFn: () => klogSdk.tags.getTags(),
+        queryFn: () => getKLogSDK().tags.getTags(),
     });
 
     const form = useForm({
@@ -86,40 +66,21 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                     status: submitStatus,
                 };
 
-                await klogSdk.posts.updatePost(postId, payload);
-
+                await getKLogSDK().posts.createPost(payload);
                 queryClient.invalidateQueries({ queryKey: ["posts:all"] });
-                queryClient.invalidateQueries({
-                    queryKey: ["post:detail", postId],
-                });
             } catch (error) {
                 if (error instanceof NetworkError) {
                     setSubmitError(`网络错误：${error.message}`);
                 } else if (error instanceof KLogError) {
-                    setSubmitError(`更新失败：${error.message}`);
+                    setSubmitError(`提交失败：${error.message}`);
                 } else {
-                    setSubmitError("更新失败：未知错误");
+                    setSubmitError("提交失败：未知错误");
                 }
             }
         },
     });
 
-    // 填充数据到表单
-    useEffect(() => {
-        if (post) {
-            // 初始化提交状态为文章当前状态
-            setSubmitStatus(post.status);
-            form.reset({
-                ...post,
-                content: post.content ?? "",
-                tags: post.tags?.map((tag) => tag.name) || [],
-                cover_image_url: post.cover_image_url ?? undefined,
-                excerpt: post.excerpt ?? "",
-                category_id: post.category_id ?? undefined,
-            });
-        }
-    }, [post, form.reset]);
-
+    // 元数据错误提示组件
     function FieldInfo({ field }: { field: any }) {
         const errors = field.state.meta.errors
             .map((e: any) => e.message)
@@ -129,21 +90,6 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                 {errors}
             </div>
         ) : null;
-    }
-
-    if (isPostLoading) {
-        return <div className="p-8">正在加载文章数据...</div>;
-    }
-
-    if (isPostError) {
-        return (
-            <div className="p-8 text-red-500">
-                加载文章失败：
-                {postError instanceof Error
-                    ? postError.message
-                    : String(postError)}
-            </div>
-        );
     }
 
     return (
@@ -157,86 +103,26 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
             <div className="flex flex-col gap-4 md:gap-8 h-full md:flex-row-reverse p-4 md:p-8">
                 <div className="md:hidden mb-4 md:mb-8">
                     <h1 className="text-2xl font-bold text-primary">
-                        {"编辑文章"}
+                        {"新建文章"}
                     </h1>
                 </div>
-                {/* 文章元数据区域 */}
+                {/* 文章元数据区域（右侧/移动端居上） */}
                 <div className="max-w-md w-full md:h-full space-y-4 md:sticky md:top-6 self-start">
                     {/* 文章标题 */}
                     <div className="flex flex-col gap-2">
                         <form.Field
                             name="title"
-                            children={(field) => (
-                                <>
-                                    <label htmlFor={field.name}>文章标题</label>
-                                    <input
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value}
-                                        placeholder="输入文章标题"
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
-                                        }
-                                        onBlur={field.handleBlur}
-                                        className={cn(
-                                            "p-2 rounded-sm flex-1 bg-background border border-transparent",
-                                            "focus:border-primary focus:outline-none",
-                                            field.state.meta.isTouched &&
-                                                !field.state.meta.isValid &&
-                                                "border-red-500"
-                                        )}
-                                    />
-                                    <FieldInfo field={field} />
-                                </>
-                            )}
-                        />
-                    </div>
-                    {/* 文章 slug */}
-                    <div className="flex flex-col gap-2">
-                        <form.Field
-                            name="slug"
-                            children={(field) => (
-                                <>
-                                    <label htmlFor={field.name}>
-                                        文章 slug
-                                    </label>
-                                    <input
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value}
-                                        placeholder="输入文章 slug"
-                                        onChange={(e) =>
-                                            field.handleChange(e.target.value)
-                                        }
-                                        onBlur={field.handleBlur}
-                                        className={cn(
-                                            "p-2 rounded-sm flex-1 bg-background border border-transparent",
-                                            "focus:border-primary focus:outline-none",
-                                            field.state.meta.isTouched &&
-                                                !field.state.meta.isValid &&
-                                                "border-red-500"
-                                        )}
-                                    />
-                                    <FieldInfo field={field} />
-                                </>
-                            )}
-                        />
-                    </div>
-                    {/* 文章封面 */}
-                    <div className="flex flex-col gap-2">
-                        <form.Field
-                            name="cover_image_url"
-                            children={(field) => (
-                                <>
-                                    <label htmlFor={field.name}>
-                                        封面图片链接
-                                    </label>
-                                    <div className="flex items-center gap-2">
+                            children={(field) => {
+                                return (
+                                    <>
+                                        <label htmlFor={field.name}>
+                                            文章标题
+                                        </label>
                                         <input
                                             id={field.name}
                                             name={field.name}
-                                            value={field.state.value ?? ""}
-                                            placeholder="输入或上传生成链接"
+                                            value={field.state.value}
+                                            placeholder="输入文章标题"
                                             onChange={(e) =>
                                                 field.handleChange(
                                                     e.target.value
@@ -251,48 +137,125 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                                     "border-red-500"
                                             )}
                                         />
-                                        <label className="bg-primary text-foreground px-3 py-2 rounded-sm cursor-pointer hover:bg-primary/90 transition-colors">
-                                            上传
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={async (e) => {
-                                                    const file =
-                                                        e.target.files?.[0];
-                                                    if (!file) return;
-                                                    try {
-                                                        const res =
-                                                            await klogSdk.media.uploadFile(
-                                                                file
-                                                            );
-                                                        field.handleChange(
-                                                            res.url
-                                                        );
-                                                    } catch (e) {
-                                                        console.warn(e);
-                                                    }
-                                                }}
-                                            />
+                                        <FieldInfo field={field} />
+                                    </>
+                                );
+                            }}
+                        />
+                    </div>
+                    {/* 文章 slug */}
+                    <div className="flex flex-col gap-2">
+                        <form.Field
+                            name="slug"
+                            children={(field) => {
+                                return (
+                                    <>
+                                        <label htmlFor={field.name}>
+                                            文章 slug
                                         </label>
-                                    </div>
-                                    {field.state.value && (
-                                        <div className="mt-2">
-                                            <img
-                                                src={field.state.value}
-                                                alt="封面预览"
-                                                className="max-w-full h-auto max-h-32 rounded-sm border border-primary/20"
-                                                onError={(e) => {
-                                                    (
-                                                        e.target as HTMLImageElement
-                                                    ).style.display = "none";
-                                                }}
+                                        <input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            placeholder="输入文章 slug"
+                                            onChange={(e) =>
+                                                field.handleChange(
+                                                    e.target.value
+                                                )
+                                            }
+                                            onBlur={field.handleBlur}
+                                            className={cn(
+                                                "p-2 rounded-sm flex-1 bg-background border border-transparent",
+                                                "focus:border-primary focus:outline-none",
+                                                field.state.meta.isTouched &&
+                                                    !field.state.meta.isValid &&
+                                                    "border-red-500"
+                                            )}
+                                        />
+                                        <FieldInfo field={field} />
+                                    </>
+                                );
+                            }}
+                        />
+                    </div>
+                    {/* 文章封面（链接与上传） */}
+                    <div className="flex flex-col gap-2">
+                        <form.Field
+                            name="cover_image_url"
+                            children={(field) => {
+                                return (
+                                    <>
+                                        <label htmlFor={field.name}>
+                                            封面图片链接
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                id={field.name}
+                                                name={field.name}
+                                                value={field.state.value ?? ""}
+                                                placeholder="输入或上传生成链接"
+                                                onChange={(e) =>
+                                                    field.handleChange(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                onBlur={field.handleBlur}
+                                                className={cn(
+                                                    "p-2 rounded-sm flex-1 bg-background border border-transparent",
+                                                    "focus:border-primary focus:outline-none",
+                                                    field.state.meta
+                                                        .isTouched &&
+                                                        !field.state.meta
+                                                            .isValid &&
+                                                        "border-red-500"
+                                                )}
                                             />
+                                            <label className="bg-primary text-foreground px-3 py-2 rounded-sm cursor-pointer hover:bg-primary/90 transition-colors">
+                                                上传
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={async (e) => {
+                                                        const file =
+                                                            e.target.files?.[0];
+                                                        if (!file) return;
+                                                        try {
+                                                            const res =
+                                                                await getKLogSDK().media.uploadFile(
+                                                                    file
+                                                                );
+                                                            field.handleChange(
+                                                                res.url
+                                                            );
+                                                        } catch (e) {
+                                                            // 忽略，交由总提交错误处理
+                                                            console.warn(e);
+                                                        } finally {
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
                                         </div>
-                                    )}
-                                    <FieldInfo field={field} />
-                                </>
-                            )}
+                                        {field.state.value && (
+                                            <div className="mt-2">
+                                                <img
+                                                    src={field.state.value}
+                                                    alt="封面预览"
+                                                    className="max-w-full h-auto max-h-32 rounded-sm border border-primary/20"
+                                                    onError={(e) => {
+                                                        (
+                                                            e.target as HTMLImageElement
+                                                        ).style.display =
+                                                            "none";
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                        <FieldInfo field={field} />
+                                    </>
+                                );
+                            }}
                         />
                     </div>
                     {/* 文章摘要 */}
@@ -334,7 +297,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                     <select
                                         id={field.name}
                                         name={field.name}
-                                        value={field.state.value ?? 0}
+                                        value={field.state.value}
                                         onChange={(e) =>
                                             field.handleChange(
                                                 Number(e.target.value) === 0
@@ -363,7 +326,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                             )}
                         />
                     </div>
-                    {/* 文章标签 */}
+                    {/* 文章标签（逗号分隔） */}
                     <div className="flex flex-col gap-2">
                         <form.Field
                             name="tags"
@@ -396,10 +359,10 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                                 "border-red-500"
                                         )}
                                     />
-                                    {allTags && allTags.length > 0 ? (
+                                    {allTtags && allTtags.length > 0 ? (
                                         <div className="text-xs text-muted-foreground">
                                             已有：
-                                            {allTags
+                                            {allTtags
                                                 .map((t: Tag) => t.name)
                                                 .join("，")}
                                         </div>
@@ -419,23 +382,22 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                 <button
                                     type="submit"
                                     disabled={!canSubmit}
-                                    onClick={() => setSubmitStatus("draft")}
+                                    onClick={() => {
+                                        setSubmitStatus("draft");
+                                    }}
                                     className="bg-primary/80 text-foreground rounded-sm px-4 py-2 disabled:opacity-50"
                                 >
-                                    {isSubmitting && submitStatus === "draft"
-                                        ? "..."
-                                        : "更新草稿"}
+                                    {isSubmitting ? "..." : "保存草稿"}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={!canSubmit}
-                                    onClick={() => setSubmitStatus("published")}
+                                    onClick={() => {
+                                        setSubmitStatus("published");
+                                    }}
                                     className="bg-primary text-foreground rounded-sm px-4 py-2 disabled:opacity-50"
                                 >
-                                    {isSubmitting &&
-                                    submitStatus === "published"
-                                        ? "..."
-                                        : "更新发布"}
+                                    {isSubmitting ? "..." : "发布"}
                                 </button>
                             </div>
                         )}
@@ -446,11 +408,11 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                         </div>
                     ) : null}
                 </div>
-                {/* 文章内容编辑区域 */}
+                {/* 文章内容编辑区域（左侧/移动端居下） */}
                 <div className="flex-1 max-w-md md:max-w-none w-full">
                     <div className="hidden md:block mb-8">
                         <h1 className="text-2xl font-bold text-primary">
-                            {"编辑文章"}
+                            {"新建文章"}
                         </h1>
                     </div>
                     <form.Field
@@ -458,12 +420,12 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                         children={(field) => (
                             <MarkdownEditorWrapper
                                 value={field.state.value}
-                                delayValue={post?.content}
                                 onChange={(v) => field.handleChange(v)}
                                 onImageUpload={async (file) => {
-                                    const res = await klogSdk.media.uploadFile(
-                                        file
-                                    );
+                                    const res =
+                                        await getKLogSDK().media.uploadFile(
+                                            file
+                                        );
                                     return res.url;
                                 }}
                                 className={cn(
