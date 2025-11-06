@@ -27,7 +27,7 @@ function LayoutContent({ children }: DashboardLayoutProps) {
     const { isSidebarOpen, setSidebarOpen } = useSidebar();
 
     return (
-        <div className="min-h-screen w-full bg-background flex overflow-x-hidden">
+        <div className="min-h-screen w-full bg-background flex overflow-y-hidden">
             {/* 侧边栏 */}
             <DashboardSideBar />
             {/* 移动端展开时的遮罩层 */}
@@ -45,7 +45,7 @@ function LayoutContent({ children }: DashboardLayoutProps) {
                 )}
             </AnimatePresence>
             {/* 主内容区域 */}
-            <main className="bg-background-1 md:rounded-tl-3xl md:rounded-bl-3xl flex-1 p-4">
+            <main className="bg-background-1 md:border-l-3 md:border-border flex-1 max-h-screen">
                 <AnimatePresence mode="wait">{children}</AnimatePresence>
             </main>
         </div>

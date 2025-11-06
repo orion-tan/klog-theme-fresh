@@ -6,7 +6,7 @@ import { usePagination } from "@/hooks/use-pagination";
 import { cva, VariantProps } from "class-variance-authority";
 
 const buttonVariants = cva(
-    "hover:text-primary inline-flex items-center justify-center",
+    "hover:text-primary inline-flex items-center justify-center border-2 border-border",
     {
         variants: {
             size: {
@@ -29,6 +29,7 @@ type NumberedPaginationProps = {
     totalPages: number;
     paginationItemsToDisplay?: number;
     onPageChange: (page: number) => void;
+    className?: string;
 };
 
 function NumberedPagination({
@@ -36,6 +37,7 @@ function NumberedPagination({
     totalPages,
     paginationItemsToDisplay = 5,
     onPageChange,
+    className,
 }: NumberedPaginationProps) {
     const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
         currentPage,
@@ -49,7 +51,7 @@ function NumberedPagination({
     };
 
     return (
-        <Pagination>
+        <Pagination className={className}>
             <PaginationContent>
                 <PaginationItem>
                     <PaginationPrevious
@@ -113,7 +115,7 @@ const PaginationContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <ul
         ref={ref}
-        className={cn("flex items-center gap-1", className)}
+        className={cn("flex items-center gap-2", className)}
         {...props}
     />
 ));

@@ -116,14 +116,21 @@ function NavItem({ href, label, icon, active }: NavItemProps) {
     return (
         <Link
             href={href}
-            className="relative flex items-center gap-4 px-4 py-2 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+                "relative flex items-center gap-4 px-4 py-2 border-2 border-border transition-all duration-200",
+                "-translate-y-0.5 -translate-x-0.5 shadow-[2px_2px_0_0_var(--border)]",
+                "md:translate-x-0 md:translate-y-0 md:shadow-none",
+                "md:hover:-translate-y-1 md:hover:translate-x-1 md:hover:shadow-[-4px_4px_0_0_var(--border)]",
+                "active:translate-x-0 active:translate-y-0 active:shadow-none",
+                "md:active:translate-x-0 md:active:translate-y-0 md:active:shadow-none"
+            )}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* 动画背景 */}
             <motion.div
                 className={cn(
-                    "absolute inset-0 bg-primary/70 rounded-sm",
+                    "absolute inset-0 bg-primary/90",
                     active && "bg-primary"
                 )}
                 variants={navItemBackgroundVariants}
@@ -162,9 +169,10 @@ export default function DashboardSideBar() {
             variants={sidebarVariants}
             animate={isSidebarOpen || isDesktop ? "open" : "closed"}
             className={cn(
-                "bg-background w-[280px] md:w-[320px] h-full z-11 fixed top-0 left-0 p-4",
+                "bg-background w-[300px] md:w-[320px] h-full z-11 fixed top-0 left-0 p-4",
                 "md:relative md:z-auto",
-                "rounded-tr-3xl rounded-br-3xl md:rounded-none"
+                "border-r-2 border-border md:border-none",
+                "overflow-y-auto max-h-screen scrollbar-none"
             )}
         >
             {/* 侧边栏顶部 */}
@@ -179,18 +187,25 @@ export default function DashboardSideBar() {
                 </button>
             </div>
             {/* 侧边栏中间 */}
-            <div className="w-full flex flex-col mt-12 md:mt-24 gap-4 px-8">
+            <div className="w-full flex flex-col mt-12 gap-4 px-4 md:px-8">
                 <p className="font-bold text-left w-full">内容管理</p>
                 {sidebarNavItems.map((item) => (
                     <NavItem key={`${item.label}-${item.href}`} {...item} />
                 ))}
             </div>
             {/* 侧边栏底部 */}
-            <div className="w-full flex flex-col mt-8 md:mt-16 gap-4 px-8">
+            <div className="w-full flex flex-col mt-8 gap-6 px-4 md:px-8">
                 <p className="font-bold text-left w-full mt-12">其他管理</p>
                 <Link
                     href="/dashboard/settings"
-                    className="flex items-center gap-4 px-4 py-2"
+                    className={cn(
+                        "flex items-center gap-4 px-4 py-2 border-2 border-border transition-all duration-200",
+                        "-translate-y-0.5 -translate-x-0.5 shadow-[2px_2px_0_0_var(--border)]",
+                        "md:translate-x-0 md:translate-y-0 md:shadow-none",
+                        "md:hover:-translate-y-1 md:hover:translate-x-1 md:hover:shadow-[-4px_4px_0_0_var(--border)]",
+                        "active:translate-x-0 active:translate-y-0 active:shadow-none",
+                        "md:active:translate-x-0 md:active:translate-y-0 md:active:shadow-none"
+                    )}
                 >
                     <Settings size={24} />
                     <span>设置</span>
@@ -198,7 +213,13 @@ export default function DashboardSideBar() {
                 <ThemeToggle
                     size={6}
                     text={isDark ? "夜间模式" : "日间模式"}
-                    className="px-4 py-2 gap-4 justify-start cursor-pointer"
+                    className={cn(
+                        "px-4 py-2 gap-4 justify-start cursor-pointer border-2 border-border transition-all duration-200",
+                        "-translate-y-0.5 -translate-x-0.5 shadow-[2px_2px_0_0_var(--border)]",
+                        "md:-translate-x-1 md:-translate-y-1 md:shadow-[4px_4px_0_0_var(--border)]",
+                        "active:translate-x-0 active:translate-y-0 active:shadow-none",
+                        "md:active:translate-x-0 md:active:translate-y-0 md:active:shadow-none"
+                    )}
                 />
             </div>
         </motion.aside>
