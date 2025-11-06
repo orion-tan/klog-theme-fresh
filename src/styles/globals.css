@@ -9,6 +9,7 @@
     --primary: #ffa4a4;
     --secondary: #ffc6c7;
     --tertiary: #c3f0ca;
+    --border: #383838;
     --card-bg: #fffffe;
     --card-fg: #33272a;
 
@@ -40,6 +41,7 @@
     --primary: #7f5af0;
     --secondary: #72757e;
     --tertiary: #2cb67d;
+    --border: #8a91a0;
     --card-bg: #fffffe;
     --card-fg: #33272a;
 
@@ -71,6 +73,7 @@
     --color-primary: var(--primary);
     --color-secondary: var(--secondary);
     --color-tertiary: var(--tertiary);
+    --color-border: var(--border);
     --color-card-bg: var(--card-bg);
     --color-card-fg: var(--card-fg);
     --font-sans: var(--font-geist-sans);

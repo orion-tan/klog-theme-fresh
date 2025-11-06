@@ -9,6 +9,8 @@ import { KLogError, NetworkError } from "klog-sdk";
 import { useRouter } from "next/navigation";
 
 import { getKLogSDK } from "@/lib/api-request";
+import { FloatingLabelInput } from "@/components/ui/floating-label-input";
+import { Button } from "@/components/ui/button";
 
 const registerSchema = z.object({
     username: z.string().min(1, "用户名不能为空").max(30, "用户名长度超出限制"),
@@ -83,30 +85,19 @@ export default function RegisterPageComponent() {
                         name="username"
                         children={(field) => {
                             return (
-                                <>
-                                    <label
-                                        htmlFor={field.name}
-                                        className="text-end"
-                                    >
-                                        {"用户名: "}
-                                    </label>
-                                    <div className="flex items-center justify-between pt-1 gap-2">
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            placeholder={"输入用户名"}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="p-2 rounded-sm flex-1 bg-background"
-                                        />
-                                        <FieldInfo field={field} />
-                                    </div>
-                                </>
+                                <FloatingLabelInput
+                                    error={field.state.meta.errors
+                                        .map((e) => e?.message)
+                                        .join(", ")}
+                                    htmlFor={field.name}
+                                    label="用户名"
+                                    name={field.name}
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) =>
+                                        field.handleChange(e.target.value)
+                                    }
+                                />
                             );
                         }}
                     />
@@ -117,30 +108,20 @@ export default function RegisterPageComponent() {
                         name="email"
                         children={(field) => {
                             return (
-                                <>
-                                    <label
-                                        htmlFor={field.name}
-                                        className="text-end"
-                                    >
-                                        {"邮箱: "}
-                                    </label>
-                                    <div className="flex items-center justify-between pt-1 gap-2">
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            type="email"
-                                            placeholder={"输入邮箱"}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="p-2 rounded-sm flex-1 bg-background"
-                                        />
-                                        <FieldInfo field={field} />
-                                    </div>
-                                </>
+                                <FloatingLabelInput
+                                    error={field.state.meta.errors
+                                        .map((e) => e?.message)
+                                        .join(", ")}
+                                    htmlFor={field.name}
+                                    label="邮箱"
+                                    type="email"
+                                    name={field.name}
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) =>
+                                        field.handleChange(e.target.value)
+                                    }
+                                />
                             );
                         }}
                     />
@@ -151,30 +132,20 @@ export default function RegisterPageComponent() {
                         name="password"
                         children={(field) => {
                             return (
-                                <>
-                                    <label
-                                        htmlFor={field.name}
-                                        className="text-end"
-                                    >
-                                        {"密码: "}
-                                    </label>
-                                    <div className="flex items-center justify-between pt-1 gap-2">
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            type="password"
-                                            placeholder={"输入密码"}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="p-2 rounded-sm flex-1 bg-background"
-                                        />
-                                        <FieldInfo field={field} />
-                                    </div>
-                                </>
+                                <FloatingLabelInput
+                                    error={field.state.meta.errors
+                                        .map((e) => e?.message)
+                                        .join(", ")}
+                                    htmlFor={field.name}
+                                    label="密码"
+                                    type="password"
+                                    name={field.name}
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) =>
+                                        field.handleChange(e.target.value)
+                                    }
+                                />
                             );
                         }}
                     />
@@ -185,29 +156,19 @@ export default function RegisterPageComponent() {
                         name="nickname"
                         children={(field) => {
                             return (
-                                <>
-                                    <label
-                                        htmlFor={field.name}
-                                        className="text-end"
-                                    >
-                                        {"昵称: "}
-                                    </label>
-                                    <div className="flex items-center justify-between pt-1 gap-2">
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            placeholder={"输入昵称"}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="p-2 rounded-sm flex-1 bg-background"
-                                        />
-                                        <FieldInfo field={field} />
-                                    </div>
-                                </>
+                                <FloatingLabelInput
+                                    error={field.state.meta.errors
+                                        .map((e) => e?.message)
+                                        .join(", ")}
+                                    htmlFor={field.name}
+                                    label="昵称"
+                                    name={field.name}
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) =>
+                                        field.handleChange(e.target.value)
+                                    }
+                                />
                             );
                         }}
                     />
@@ -219,17 +180,17 @@ export default function RegisterPageComponent() {
                     children={([canSubmit, isSubmitting]) => {
                         return (
                             <div>
-                                <button
+                                <Button
                                     type="submit"
                                     disabled={!canSubmit}
-                                    className="w-full mt-2 bg-primary text-foreground rounded-sm px-4 py-2 disabled:bg-primary/60"
+                                    className="w-full mt-2"
                                 >
                                     {isSubmitting
                                         ? "..."
                                         : !canSubmit
                                         ? "不能注册"
                                         : "注册"}
-                                </button>
+                                </Button>
                                 {error != null && (
                                     <div className="text-red-500 text-sm">
                                         {error}
