@@ -212,6 +212,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                 children={(field) => (
                                     <>
                                         <FloatingLabelInput
+                                            variant="material"
                                             label="文章标题"
                                             id={field.name}
                                             name={field.name}
@@ -235,6 +236,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                 children={(field) => (
                                     <>
                                         <FloatingLabelInput
+                                            variant="material"
                                             label="文章 slug"
                                             id={field.name}
                                             name={field.name}
@@ -261,6 +263,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                 children={(field) => (
                                     <div className="flex items-center justify-between gap-2">
                                         <FloatingLabelInput
+                                            variant="material"
                                             label="封面图片链接"
                                             id={field.name}
                                             name={field.name}

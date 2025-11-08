@@ -3,7 +3,12 @@
 // 文章管理列表表格
 import type { Post } from "klog-sdk";
 import Link from "next/link";
-import { CalendarIcon, PencilIcon, TrashIcon } from "lucide-react";
+import {
+    CalendarIcon,
+    PencilIcon,
+    TrashIcon,
+    MessageCircleMore,
+} from "lucide-react";
 
 import Bage from "@/components/ui/bage";
 import { cn } from "@/lib/utils";
@@ -118,12 +123,12 @@ export default function PostsList({ posts, className }: PostsTableProps) {
                     </div>
                     {/* 右侧操作 */}
                     <div>
-                        <div className="inline-flex items-center gap-2">
+                        <div className="inline-flex items-center gap-2 flex-wrap">
                             <Link
                                 href={`/dashboard/posts/edit/${post.id}`}
                                 key={`edit-${post.id}`}
                             >
-                                <Button variant="outline">
+                                <Button variant="outline" size="sm">
                                     <PencilIcon className="w-4 h-4 mr-2" />
                                     编辑
                                 </Button>
@@ -131,11 +136,22 @@ export default function PostsList({ posts, className }: PostsTableProps) {
 
                             <Button
                                 variant="outline"
+                                size="sm"
                                 onClick={() => handleDelete(post.id)}
                             >
                                 <TrashIcon className="w-4 h-4 mr-2" />
                                 删除
                             </Button>
+
+                            <Link
+                                href={`/dashboard/posts/comments/${post.id}`}
+                                key={`comments-${post.id}`}
+                            >
+                                <Button variant="outline" size="sm">
+                                    <MessageCircleMore className="w-4 h-4 mr-2" />
+                                    评论
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </article>

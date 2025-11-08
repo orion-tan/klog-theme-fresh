@@ -5,7 +5,6 @@ import {
     FilePen,
     FolderKanban,
     Folders,
-    MessageCircleMore,
     Settings,
     Tag,
     X,
@@ -94,12 +93,6 @@ const getSidebarNavItems = (pathname: string) => {
             icon: <Tag size={24} />,
             active: pathname.startsWith("/dashboard/tags"),
         },
-        {
-            href: "/dashboard/comments",
-            label: "评论",
-            icon: <MessageCircleMore size={24} />,
-            active: pathname.startsWith("/dashboard/comments"),
-        },
     ];
 };
 
@@ -151,7 +144,7 @@ export default function DashboardSideBar() {
     const [isClient, setIsClient] = useState(false);
     useEffect(() => {
         setIsClient(true);
-    });
+    }, []);
 
     const { isSidebarOpen, setSidebarOpen } = useSidebar();
     const { resolvedTheme } = useTheme();
@@ -162,6 +155,8 @@ export default function DashboardSideBar() {
     const pathname = usePathname();
 
     const sidebarNavItems = getSidebarNavItems(pathname);
+
+    const isSettingsPage = pathname === "/dashboard/settings";
 
     return (
         <motion.aside
@@ -204,7 +199,8 @@ export default function DashboardSideBar() {
                         "md:translate-x-0 md:translate-y-0 md:shadow-none",
                         "md:hover:-translate-y-1 md:hover:translate-x-1 md:hover:shadow-[-4px_4px_0_0_var(--border)]",
                         "active:translate-x-0 active:translate-y-0 active:shadow-none",
-                        "md:active:translate-x-0 md:active:translate-y-0 md:active:shadow-none"
+                        "md:active:translate-x-0 md:active:translate-y-0 md:active:shadow-none",
+                        isSettingsPage && "bg-primary"
                     )}
                 >
                     <Settings size={24} />

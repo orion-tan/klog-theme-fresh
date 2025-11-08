@@ -13,6 +13,7 @@ import { getKLogSDK } from "@/lib/api-request";
 import { Category, KLogError, NetworkError, Tag } from "klog-sdk";
 import { cn } from "@/lib/utils";
 import { FloatingLabelInput } from "@/components/ui/floating-label-input";
+import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/hooks/dashboard/use-sidebar";
 
@@ -152,12 +153,13 @@ export default function PostNewTab() {
                             {"元数据"}
                         </div>
                         {/* 文章标题和Slug */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <form.Field
                                 name="title"
                                 children={(field) => (
                                     <>
                                         <FloatingLabelInput
+                                            variant="material"
                                             label="文章标题"
                                             id={field.name}
                                             name={field.name}
@@ -182,6 +184,7 @@ export default function PostNewTab() {
                                     <>
                                         <FloatingLabelInput
                                             label="文章 slug"
+                                            variant="material"
                                             id={field.name}
                                             name={field.name}
                                             value={field.state.value}
@@ -208,6 +211,7 @@ export default function PostNewTab() {
                                     <div className="flex items-center justify-between gap-2">
                                         <FloatingLabelInput
                                             label="封面图片链接"
+                                            variant="material"
                                             id={field.name}
                                             name={field.name}
                                             value={field.state.value ?? ""}
@@ -291,38 +295,26 @@ export default function PostNewTab() {
                                 children={(field) => (
                                     <>
                                         <label htmlFor={field.name}>分类</label>
-                                        <select
-                                            id={field.name}
-                                            name={field.name}
+                                        <Select
+                                            options={[
+                                                { label: "未分类", value: 0 },
+                                                ...(allCategories?.map(
+                                                    (c: Category) => ({
+                                                        label: c.name,
+                                                        value: c.id,
+                                                    })
+                                                ) || []),
+                                            ]}
                                             value={field.state.value ?? 0}
-                                            onChange={(e) =>
+                                            onValueChange={(value) =>
                                                 field.handleChange(
-                                                    Number(e.target.value) === 0
-                                                        ? undefined
-                                                        : Number(e.target.value)
+                                                    value
+                                                        ? Number(value)
+                                                        : undefined
                                                 )
                                             }
                                             onBlur={field.handleBlur}
-                                            className={cn(
-                                                "p-2 border-2 border-border outline-none transition-colors duration-200 ease-in-out",
-                                                "focus:border-primary active:border-primary",
-                                                field.state.meta.isTouched &&
-                                                    !field.state.meta.isValid &&
-                                                    "border-red-500"
-                                            )}
-                                        >
-                                            <option value={0}>选择分类</option>
-                                            {allCategories?.map(
-                                                (c: Category) => (
-                                                    <option
-                                                        key={c.id}
-                                                        value={c.id}
-                                                    >
-                                                        {c.name}
-                                                    </option>
-                                                )
-                                            )}
-                                        </select>
+                                        />
                                     </>
                                 )}
                             />
@@ -333,10 +325,9 @@ export default function PostNewTab() {
                                 name="tags"
                                 children={(field) => (
                                     <>
-                                        <label htmlFor={field.name}>
-                                            标签（逗号分隔）
-                                        </label>
-                                        <input
+                                        <FloatingLabelInput
+                                            label="标签（逗号分隔）"
+                                            variant="outline"
                                             id={field.name}
                                             name={field.name}
                                             value={(
@@ -352,19 +343,12 @@ export default function PostNewTab() {
                                                         .filter(Boolean)
                                                 )
                                             }
-                                            className={cn(
-                                                "p-2 border-2 border-border outline-none transition-colors duration-200 ease-in-out",
-                                                "focus:border-primary active:border-primary",
-                                                field.state.meta.isTouched &&
-                                                    !field.state.meta.isValid &&
-                                                    "border-red-500"
-                                            )}
                                         />
                                         {allTags && allTags.length > 0 ? (
                                             <div className="text-xs text-muted-foreground">
                                                 已有：
                                                 {allTags
-                                                    .map((t: Tag) => t.name)
+                                                    .map((t: Tag) => t.slug)
                                                     .join("，")}
                                             </div>
                                         ) : null}

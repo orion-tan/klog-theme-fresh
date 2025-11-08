@@ -5,13 +5,17 @@
 import Link from "next/link";
 import { getKLogSDK } from "@/lib/api-request";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Loader2, Menu, PlusIcon } from "lucide-react";
 
 import { NumberedPagination } from "@/components/ui/pagination";
-import PostsList from "@/components/dashboard/PostsList";
+import PostsList from "@/components/dashboard/post/PostsList";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/hooks/dashboard/use-sidebar";
+import {
+    PostFilters,
+    PostFiltersState,
+} from "@/components/dashboard/filters/PostFilters";
 
 // 文章管理界面 Tab 界面
 
@@ -21,26 +25,56 @@ export default function PostViewTab() {
     // 利用kLogSDK获取数据并分页展示
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const [filters, setFilters] = useState<PostFiltersState>({
+        title: "",
+        category: undefined,
+        status: undefined,
+    });
+
+    const klogSdk = getKLogSDK();
+
+    // 获取分类列表（用于筛选器）
+    const { data: categories } = useQuery({
+        queryKey: ["categories:all"],
+        queryFn: () => klogSdk.categories.getCategories(),
+    });
 
     const {
         data: pageData,
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["posts", currentPage, pageSize],
+        queryKey: [
+            "posts",
+            currentPage,
+            pageSize,
+            filters.category,
+            filters.status,
+        ],
         queryFn: () =>
-            getKLogSDK().posts.getPosts({
+            klogSdk.posts.getPosts({
                 page: currentPage,
                 limit: pageSize,
+                category: filters.category?.toString(),
+                status: filters.status,
                 sortBy: "created_at",
                 order: "desc",
             }),
     });
 
+    // 前端标题过滤（SDK无搜索API）
+    const filteredPosts = useMemo(() => {
+        if (!pageData?.data) return [];
+        if (!filters.title) return pageData.data;
+        return pageData.data.filter((post) =>
+            post.title.toLowerCase().includes(filters.title.toLowerCase())
+        );
+    }, [pageData, filters.title]);
+
     return (
         <div className="flex flex-col gap-4 h-full pb-8">
             {/* 顶部大标题 */}
-            <header className="flex items-center justify-between px-4 md:px-8 h-16 border-b-2 border-border sticky top-0 z-10">
+            <header className="flex items-center justify-between px-4 md:px-8 h-16 border-b-2 border-border sticky top-0 z-10 bg-background">
                 <div className="inline-flex items-center gap-4">
                     <Button
                         variant="outline"
@@ -56,8 +90,17 @@ export default function PostViewTab() {
                     </h1>
                 </div>
             </header>
+
+            {/* 筛选器 */}
+            <div className="px-4 md:px-8">
+                <PostFilters
+                    categories={categories || []}
+                    onFilterChange={setFilters}
+                />
+            </div>
+
             {/* 中间文字管理列表区域 */}
-            <section className="flex-1 overflow-y-auto p-4 mt-8 flex flex-col">
+            <section className="flex-1 overflow-y-auto p-4 flex flex-col">
                 {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                         <Loader2 className="w-10 h-10 animate-spin" />
@@ -68,9 +111,14 @@ export default function PostViewTab() {
                     </div>
                 ) : (
                     <>
-                        {(pageData?.total || 0) > 0 ? (
+                        {/* 结果统计 */}
+                        <p className="mb-4 text-sm text-secondary">
+                            📊 找到 {filteredPosts.length} 篇文章
+                        </p>
+
+                        {filteredPosts.length > 0 ? (
                             <>
-                                <PostsList posts={pageData?.data || []} />
+                                <PostsList posts={filteredPosts} />
                                 <div className="h-1 bg-transparent border-b-2 border-border w-full my-4" />
                                 <NumberedPagination
                                     currentPage={currentPage}
@@ -87,6 +135,7 @@ export default function PostViewTab() {
                     </>
                 )}
             </section>
+
             {/* 底部新建文章 */}
             <div className="w-full flex items-center justify-center gap-4 md:justify-start self-end md:px-8">
                 <Link href="/dashboard/posts/new">
