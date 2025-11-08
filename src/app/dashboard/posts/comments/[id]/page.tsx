@@ -18,7 +18,7 @@ export default async function PostCommentsPage({
 }: PostCommentsPageProps) {
     const { id } = await params;
     return (
-        <div className="p-4 md:p-8 bg-background-1 h-full max-h-screen overflow-hidden">
+        <div className="bg-background-1 h-full max-h-screen overflow-hidden">
             <PostCommentViewTab id={Number(id)} />
         </div>
     );

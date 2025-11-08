@@ -164,14 +164,14 @@ export default function DashboardSideBar() {
             variants={sidebarVariants}
             animate={isSidebarOpen || isDesktop ? "open" : "closed"}
             className={cn(
-                "bg-background w-[300px] md:w-[320px] h-full z-11 fixed top-0 left-0 p-4",
+                "bg-background w-[300px] md:w-[320px] h-full z-11 fixed top-0 left-0",
                 "md:relative md:z-auto",
                 "border-r-2 border-border md:border-none",
                 "overflow-y-auto max-h-screen scrollbar-none"
             )}
         >
             {/* 侧边栏顶部 */}
-            <div className="p-4 flex justify-between md:justify-center items-center">
+            <div className="bg-background p-4 flex justify-between md:justify-center items-center sticky top-0 z-11">
                 <p className="text-xl font-bold text-center">侧边栏</p>
                 <button
                     onClick={() => setSidebarOpen(false)}

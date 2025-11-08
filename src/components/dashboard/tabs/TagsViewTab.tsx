@@ -60,9 +60,9 @@ export default function TagsViewTab() {
     };
 
     return (
-        <div className="flex flex-col gap-4 h-full pb-8">
+        <div className="bg-background flex flex-col gap-4 h-full pb-8 overflow-y-auto">
             {/* 顶部大标题 */}
-            <header className="flex items-center justify-between px-4 md:px-8 h-16 border-b-2 border-border sticky top-0 z-10 bg-background">
+            <header className="bg-background flex items-center justify-between px-4 md:px-8 py-4 h-16 border-b-2 border-border sticky top-0 z-8">
                 <div className="inline-flex items-center gap-4">
                     <Button
                         variant="outline"
@@ -74,7 +74,7 @@ export default function TagsViewTab() {
                         <Menu size={16} />
                     </Button>
                     <h1 className="text-xl md:text-2xl font-bold text-primary">
-                        🏷️ 标签管理
+                        标签管理
                     </h1>
                 </div>
                 <Button onClick={handleCreate}>
@@ -91,7 +91,7 @@ export default function TagsViewTab() {
             </div>
 
             {/* 标签云 */}
-            <div className="flex-1 overflow-y-auto px-4 md:px-8">
+            <div className="flex-1 px-4 md:px-8">
                 {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                         <Loader2 className="w-10 h-10 animate-spin" />

@@ -5,7 +5,7 @@
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import { Menu, UploadIcon } from "lucide-react";
+import { ArrowLeft, Menu, UploadIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { MarkdownEditorWrapper } from "@/components/ui/markdown-editor";
@@ -16,13 +16,22 @@ import { FloatingLabelInput } from "@/components/ui/floating-label-input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/hooks/dashboard/use-sidebar";
+import Link from "next/link";
 
 const postsSchema = z.object({
-    title: z.string().min(1, "文章标题不能为空"),
-    slug: z.string().min(1, "文章 slug 不能为空"),
-    cover_image_url: z.string().pipe(z.url("文章封面链接格式错误")).optional(),
+    title: z
+        .string()
+        .min(1, "文章标题不能为空")
+        .max(255, "文章标题不能超过 255 个字符"),
+    slug: z
+        .string()
+        .min(1, "文章 slug 不能为空")
+        .max(255, "文章 slug 不能超过 255 个字符"),
+    cover_image_url: z
+        .union([z.literal(""), z.string().pipe(z.url("文章封面链接格式错误"))])
+        .optional(),
     content: z.string().min(1, "文章内容不能为空"),
-    excerpt: z.string().min(1, "文章摘要不能为空").optional().or(z.literal("")),
+    excerpt: z.string().max(768, "文章摘要不能超过 768 个字符").optional(),
     category_id: z.number().optional(),
     tags: z.array(z.string()).optional(),
     status: z.enum(["draft", "published", "archived"]),
@@ -95,9 +104,9 @@ export default function PostNewTab() {
                 form.handleSubmit();
             }}
         >
-            <div className="flex flex-col gap-4 max-h-screen pb-4">
+            <div className="flex flex-col gap-4 h-full pb-4 overflow-y-auto">
                 {/* 顶部大标题 */}
-                <header className="flex items-center justify-between px-4 md:px-8 h-16 border-b-2 border-border sticky top-0 z-10">
+                <header className="bg-background flex items-center justify-between px-4 md:px-8 py-4 h-16 border-b-2 border-border sticky top-0 z-8">
                     <div className="inline-flex items-center gap-4">
                         <Button
                             variant="outline"
@@ -108,45 +117,58 @@ export default function PostNewTab() {
                         >
                             <Menu size={16} />
                         </Button>
-                        <h1 className="text-xl md:text-2xl font-bold text-primary">
-                            新建文章
-                        </h1>
+                        <Link href="/dashboard/posts">
+                            <Button variant="outline">
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                返回文章列表
+                            </Button>
+                        </Link>
                     </div>
-                    {/* 操作按钮 */}
-                    <form.Subscribe
-                        selector={(state) => [
-                            state.canSubmit,
-                            state.isSubmitting,
-                        ]}
-                        children={([canSubmit, isSubmitting]) => (
-                            <div className="inline-flex items-center gap-2">
-                                <button
-                                    type="submit"
-                                    disabled={!canSubmit}
-                                    onClick={() => setSubmitStatus("draft")}
-                                    className="text-foreground px-4 py-2 disabled:opacity-50 border-border border-2"
-                                >
-                                    {isSubmitting && submitStatus === "draft"
-                                        ? "..."
-                                        : "更新草稿"}
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={!canSubmit}
-                                    onClick={() => setSubmitStatus("published")}
-                                    className="text-primary px-4 py-2 disabled:opacity-50 border-primary border-2"
-                                >
-                                    {isSubmitting &&
-                                    submitStatus === "published"
-                                        ? "..."
-                                        : "更新发布"}
-                                </button>
-                            </div>
-                        )}
-                    />
                 </header>
+
                 {/* 内容区域 */}
-                <div className="container mx-auto overflow-y-auto space-y-4 scrollbar-none">
+                <div className="container mx-auto px-2 md:px-4 space-y-4">
+                    {/* 操作区域 */}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <p className="text-xl md:text-2xl font-bold text-primary">
+                            {"新建文章"}
+                        </p>
+                        {/* 操作按钮 */}
+                        <form.Subscribe
+                            selector={(state) => [
+                                state.canSubmit,
+                                state.isSubmitting,
+                            ]}
+                            children={([canSubmit, isSubmitting]) => (
+                                <div className="inline-flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        type="submit"
+                                        disabled={!canSubmit}
+                                        onClick={() => setSubmitStatus("draft")}
+                                    >
+                                        {isSubmitting &&
+                                        submitStatus === "draft"
+                                            ? "..."
+                                            : "更新草稿"}
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        type="submit"
+                                        disabled={!canSubmit}
+                                        onClick={() =>
+                                            setSubmitStatus("published")
+                                        }
+                                    >
+                                        {isSubmitting &&
+                                        submitStatus === "published"
+                                            ? "..."
+                                            : "更新发布"}
+                                    </Button>
+                                </div>
+                            )}
+                        />
+                    </div>
                     {/* 文章元数据区域 */}
                     <div className="border-2 border-border rounded-md space-y-4 pb-4">
                         <div className="text-lg font-bold py-2 px-4 border-b-2 border-border">

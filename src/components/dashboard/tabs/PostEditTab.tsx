@@ -3,57 +3,45 @@
 "use client";
 
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { MarkdownEditorWrapper } from "@/components/ui/markdown-editor";
 import { getKLogSDK } from "@/lib/api-request";
-import { Category, KLogError, NetworkError, Tag } from "klog-sdk";
+import { Category, KLogError, NetworkError, Post, Tag } from "klog-sdk";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Menu, UploadIcon } from "lucide-react";
+import { Select } from "@/components/ui/select";
+import { ArrowLeft, Menu, UploadIcon } from "lucide-react";
 import { useSidebar } from "@/hooks/dashboard/use-sidebar";
 import { FloatingLabelInput } from "@/components/ui/floating-label-input";
+import Link from "next/link";
 
 const postsSchema = z.object({
-    title: z.string().min(1, "文章标题不能为空"),
-    slug: z.string().min(1, "文章 slug 不能为空"),
-    cover_image_url: z
+    title: z
         .string()
-        .pipe(z.url("文章封面链接格式错误"))
-        .optional()
-        .or(z.literal("")),
+        .min(1, "文章标题不能为空")
+        .max(255, "文章标题不能超过 255 个字符"),
+    slug: z
+        .string()
+        .min(1, "文章 slug 不能为空")
+        .max(255, "文章 slug 不能超过 255 个字符"),
+    cover_image_url: z
+        .union([z.literal(""), z.string().pipe(z.url("文章封面链接格式错误"))])
+        .optional(),
     content: z.string().min(1, "文章内容不能为空"),
-    excerpt: z.string().min(1, "文章摘要不能为空").optional().or(z.literal("")),
+    excerpt: z.string().max(768, "文章摘要不能超过 768 个字符").optional(),
     category_id: z.number().optional(),
     tags: z.array(z.string()).optional(),
     status: z.enum(["draft", "published", "archived"]),
 });
-
-const defaultPostValues: z.infer<typeof postsSchema> = {
-    title: "",
-    slug: "",
-    cover_image_url: "",
-    content: "",
-    excerpt: "",
-    category_id: undefined,
-    tags: [],
-    status: "draft",
-};
 
 interface PostEditTabProps {
     postId: number;
 }
 
 export default function PostEditTab({ postId }: PostEditTabProps) {
-    const { setSidebarOpen } = useSidebar();
-    const [submitError, setSubmitError] = useState<string | null>(null);
-    const [submitStatus, setSubmitStatus] = useState<
-        "draft" | "published" | "archived"
-    >("draft");
-
-    const queryClient = useQueryClient();
     const klogSdk = getKLogSDK();
 
     // 1. 获取文章数据
@@ -78,53 +66,6 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
         queryFn: () => klogSdk.tags.getTags(),
     });
 
-    const form = useForm({
-        defaultValues: defaultPostValues,
-        validators: {
-            onChange: postsSchema,
-        },
-        onSubmit: async ({ value }) => {
-            try {
-                setSubmitError(null);
-                const payload = {
-                    ...value,
-                    status: submitStatus,
-                };
-
-                await klogSdk.posts.updatePost(postId, payload);
-
-                queryClient.invalidateQueries({ queryKey: ["posts:all"] });
-                queryClient.invalidateQueries({
-                    queryKey: ["post:detail", postId],
-                });
-            } catch (error) {
-                if (error instanceof NetworkError) {
-                    setSubmitError(`网络错误：${error.message}`);
-                } else if (error instanceof KLogError) {
-                    setSubmitError(`更新失败：${error.message}`);
-                } else {
-                    setSubmitError("更新失败：未知错误");
-                }
-            }
-        },
-    });
-
-    // 填充数据到表单
-    useEffect(() => {
-        if (post) {
-            // 初始化提交状态为文章当前状态
-            setSubmitStatus(post.status);
-            form.reset({
-                ...post,
-                content: post.content ?? "",
-                tags: post.tags?.map((tag) => tag.name) || [],
-                cover_image_url: post.cover_image_url ?? undefined,
-                excerpt: post.excerpt ?? "",
-                category_id: post.category_id ?? undefined,
-            });
-        }
-    }, [post, form.reset]);
-
     if (isPostLoading) {
         return <div className="p-8">正在加载文章数据...</div>;
     }
@@ -140,6 +81,83 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
         );
     }
 
+    if (!post) {
+        return <div className="p-8">未找到文章数据。</div>;
+    }
+
+    return (
+        <PostEditForm
+            key={post.id}
+            post={post}
+            allCategories={allCategories}
+            allTags={allTags}
+        />
+    );
+}
+
+function PostEditForm({
+    post,
+    allCategories,
+    allTags,
+}: {
+    post: Post;
+    allCategories: Category[] | undefined;
+    allTags: Tag[] | undefined;
+}) {
+    const { setSidebarOpen } = useSidebar();
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [submitStatus, setSubmitStatus] = useState<
+        "draft" | "published" | "archived"
+    >("draft");
+
+    const queryClient = useQueryClient();
+    const klogSdk = getKLogSDK();
+
+    const form = useForm({
+        defaultValues: postsSchema.parse({
+            title: post.title,
+            slug: post.slug,
+            cover_image_url:
+                post.cover_image_url.length > 0
+                    ? post.cover_image_url
+                    : undefined,
+            content: post.content,
+            excerpt: post.excerpt.length > 0 ? post.excerpt : undefined,
+            category_id: post.category_id ?? undefined,
+            tags: post.tags?.map((tag) => tag.slug) ?? [],
+            status: post.status,
+        }),
+        validators: {
+            onChange: postsSchema,
+        },
+        onSubmit: async ({ value }) => {
+            try {
+                setSubmitError(null);
+                const payload = {
+                    ...value,
+                    category_id:
+                        value.category_id === 0 ? null : value.category_id,
+                    status: submitStatus,
+                };
+
+                await klogSdk.posts.updatePost(post.id, payload);
+
+                queryClient.invalidateQueries({ queryKey: ["posts:all"] });
+                queryClient.invalidateQueries({
+                    queryKey: ["post:detail", post.id],
+                });
+            } catch (error) {
+                if (error instanceof NetworkError) {
+                    setSubmitError(`网络错误：${error.message}`);
+                } else if (error instanceof KLogError) {
+                    setSubmitError(`更新失败：${error.message}`);
+                } else {
+                    setSubmitError("更新失败：未知错误");
+                }
+            }
+        },
+    });
+
     return (
         <form
             onSubmit={(e) => {
@@ -148,9 +166,9 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                 form.handleSubmit();
             }}
         >
-            <div className="flex flex-col gap-4 max-h-screen pb-4">
+            <div className="flex flex-col gap-4 h-full pb-4 overflow-y-auto">
                 {/* 顶部大标题 */}
-                <header className="flex items-center justify-between px-4 md:px-8 h-16 border-b-2 border-border sticky top-0 z-10">
+                <header className="bg-background flex items-center justify-between px-4 py-4 md:px-8 h-16 border-b-2 border-border sticky top-0 z-8">
                     <div className="inline-flex items-center gap-4">
                         <Button
                             variant="outline"
@@ -161,52 +179,64 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                         >
                             <Menu size={16} />
                         </Button>
-                        <h1 className="text-xl md:text-2xl font-bold text-primary">
-                            编辑文章
-                        </h1>
+                        <Link href="/dashboard/posts">
+                            <Button variant="outline">
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                返回文章列表
+                            </Button>
+                        </Link>
                     </div>
-                    {/* 操作按钮 */}
-                    <form.Subscribe
-                        selector={(state) => [
-                            state.canSubmit,
-                            state.isSubmitting,
-                        ]}
-                        children={([canSubmit, isSubmitting]) => (
-                            <div className="inline-flex items-center gap-2">
-                                <button
-                                    type="submit"
-                                    disabled={!canSubmit}
-                                    onClick={() => setSubmitStatus("draft")}
-                                    className="text-foreground px-4 py-2 disabled:opacity-50 border-border border-2"
-                                >
-                                    {isSubmitting && submitStatus === "draft"
-                                        ? "..."
-                                        : "更新草稿"}
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={!canSubmit}
-                                    onClick={() => setSubmitStatus("published")}
-                                    className="text-primary px-4 py-2 disabled:opacity-50 border-primary border-2"
-                                >
-                                    {isSubmitting &&
-                                    submitStatus === "published"
-                                        ? "..."
-                                        : "更新发布"}
-                                </button>
-                            </div>
-                        )}
-                    />
                 </header>
                 {/* 内容区域 */}
-                <div className="container mx-auto overflow-y-auto space-y-4 scrollbar-none">
+                <div className="container mx-auto px-2 md:px-4 space-y-4 scrollbar-none">
+                    {/* 操作区域 */}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <p className="text-xl md:text-2xl font-bold text-primary">
+                            {"编辑文章"}
+                        </p>
+                        {/* 操作按钮 */}
+                        <form.Subscribe
+                            selector={(state) => [
+                                state.canSubmit,
+                                state.isSubmitting,
+                            ]}
+                            children={([canSubmit, isSubmitting]) => (
+                                <div className="inline-flex items-center gap-4">
+                                    <Button
+                                        variant="outline"
+                                        type="submit"
+                                        disabled={!canSubmit}
+                                        onClick={() => setSubmitStatus("draft")}
+                                    >
+                                        {isSubmitting &&
+                                        submitStatus === "draft"
+                                            ? "..."
+                                            : "更新草稿"}
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        type="submit"
+                                        disabled={!canSubmit}
+                                        onClick={() =>
+                                            setSubmitStatus("published")
+                                        }
+                                    >
+                                        {isSubmitting &&
+                                        submitStatus === "published"
+                                            ? "..."
+                                            : "更新发布"}
+                                    </Button>
+                                </div>
+                            )}
+                        />
+                    </div>
                     {/* 文章元数据区域 */}
                     <div className="border-2 border-border rounded-md space-y-4 pb-4">
                         <div className="text-lg font-bold py-2 px-4 border-b-2 border-border">
                             {"元数据"}
                         </div>
                         {/* 文章标题和Slug */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <form.Field
                                 name="title"
                                 children={(field) => (
@@ -280,7 +310,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                             className="flex-1"
                                         />
 
-                                        <div className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border">
+                                        <label className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border cursor-pointer">
                                             <UploadIcon className="w-4 h-4 mr-2" />
                                             上传
                                             <input
@@ -304,7 +334,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                                     }
                                                 }}
                                             />
-                                        </div>
+                                        </label>
                                     </div>
                                 )}
                             />
@@ -348,38 +378,24 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                 children={(field) => (
                                     <>
                                         <label htmlFor={field.name}>分类</label>
-                                        <select
-                                            id={field.name}
-                                            name={field.name}
+                                        <Select
+                                            options={[
+                                                { label: "未分类", value: 0 },
+                                                ...(allCategories?.map(
+                                                    (c: Category) => ({
+                                                        label: c.name,
+                                                        value: c.id,
+                                                    })
+                                                ) || []),
+                                            ]}
                                             value={field.state.value ?? 0}
-                                            onChange={(e) =>
+                                            onValueChange={(value) =>
                                                 field.handleChange(
-                                                    Number(e.target.value) === 0
-                                                        ? undefined
-                                                        : Number(e.target.value)
+                                                    Number(value)
                                                 )
                                             }
                                             onBlur={field.handleBlur}
-                                            className={cn(
-                                                "p-2 border-2 border-border outline-none transition-colors duration-200 ease-in-out",
-                                                "focus:border-primary active:border-primary",
-                                                field.state.meta.isTouched &&
-                                                    !field.state.meta.isValid &&
-                                                    "border-red-500"
-                                            )}
-                                        >
-                                            <option value={0}>选择分类</option>
-                                            {allCategories?.map(
-                                                (c: Category) => (
-                                                    <option
-                                                        key={c.id}
-                                                        value={c.id}
-                                                    >
-                                                        {c.name}
-                                                    </option>
-                                                )
-                                            )}
-                                        </select>
+                                        />
                                     </>
                                 )}
                             />
@@ -390,10 +406,9 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                 name="tags"
                                 children={(field) => (
                                     <>
-                                        <label htmlFor={field.name}>
-                                            标签（逗号分隔）
-                                        </label>
-                                        <input
+                                        <FloatingLabelInput
+                                            label="标签（逗号分隔）"
+                                            variant="outline"
                                             id={field.name}
                                             name={field.name}
                                             value={(
@@ -409,19 +424,12 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                                                         .filter(Boolean)
                                                 )
                                             }
-                                            className={cn(
-                                                "p-2 border-2 border-border outline-none transition-colors duration-200 ease-in-out",
-                                                "focus:border-primary active:border-primary",
-                                                field.state.meta.isTouched &&
-                                                    !field.state.meta.isValid &&
-                                                    "border-red-500"
-                                            )}
                                         />
                                         {allTags && allTags.length > 0 ? (
                                             <div className="text-xs text-muted-foreground">
                                                 已有：
                                                 {allTags
-                                                    .map((t: Tag) => t.name)
+                                                    .map((t: Tag) => t.slug)
                                                     .join("，")}
                                             </div>
                                         ) : null}
@@ -446,7 +454,7 @@ export default function PostEditTab({ postId }: PostEditTabProps) {
                             children={(field) => (
                                 <MarkdownEditorWrapper
                                     value={field.state.value}
-                                    delayValue={post?.content}
+                                    // delayValue={post?.content}
                                     onChange={(v) => field.handleChange(v)}
                                     onImageUpload={async (file) => {
                                         const res =
