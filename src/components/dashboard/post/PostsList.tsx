@@ -40,7 +40,7 @@ export default function PostsList({ posts, className }: PostsTableProps) {
             {posts.map((post) => (
                 <article
                     key={post.id}
-                    className="border-2 border-border p-4 flex flex-col md:flex-row justify-between gap-4"
+                    className="border-2 border-border p-4 flex flex-col md:flex-row justify-between gap-4 rounded-md"
                 >
                     {/* 左侧元数据 */}
                     <div className="flex flex-col gap-4">
@@ -128,7 +128,11 @@ export default function PostsList({ posts, className }: PostsTableProps) {
                                 href={`/dashboard/posts/edit/${post.id}`}
                                 key={`edit-${post.id}`}
                             >
-                                <Button variant="outline" size="sm">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-primary"
+                                >
                                     <PencilIcon className="w-4 h-4 mr-2" />
                                     编辑
                                 </Button>
@@ -138,6 +142,7 @@ export default function PostsList({ posts, className }: PostsTableProps) {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleDelete(post.id)}
+                                className="text-error"
                             >
                                 <TrashIcon className="w-4 h-4 mr-2" />
                                 删除

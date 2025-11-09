@@ -23,7 +23,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         : "/register";
 
     return (
-        <main className="flex items-center justify-center min-h-screen w-full p-4 bg-background-1">
+        <main className="flex items-center justify-center min-h-screen w-full p-4 bg-surface">
             <div
                 className={cn(
                     "relative border-2 border-border overflow-hidden",

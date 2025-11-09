@@ -67,7 +67,7 @@ export function Select({
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "w-full px-4 py-2 border-2 border-border bg-background-1 text-foreground",
+                    "w-full px-4 py-2 border-2 border-border text-foreground rounded-md",
                     "flex items-center justify-between gap-2",
                     "transition-all duration-200",
                     "-translate-y-0.5 -translate-x-0.5 shadow-[2px_2px_0_0_var(--border)]",
@@ -90,7 +90,7 @@ export function Select({
                 <div
                     className={cn(
                         "absolute z-50 w-full",
-                        "border-2 border-border bg-background-1",
+                        "border-2 border-border bg-surface rounded-md",
                         "max-h-60 overflow-y-auto scrollbar-thin"
                     )}
                 >
@@ -103,8 +103,7 @@ export function Select({
                                 "w-full px-4 py-2 text-left",
                                 "hover:bg-primary transition-colors",
                                 "border-b border-border last:border-b-0",
-                                option.value === value &&
-                                    "bg-primary text-background-1 font-bold"
+                                option.value === value && "bg-primary font-bold"
                             )}
                         >
                             {option.label}

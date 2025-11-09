@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function TagsPage() {
     return (
-        <div className="bg-background-1 text-foreground h-full max-h-screen">
+        <div className="bg-background text-foreground h-full max-h-screen">
             <TagsViewTab />
         </div>
     );

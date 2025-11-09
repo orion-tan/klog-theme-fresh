@@ -6,7 +6,7 @@ import { usePagination } from "@/hooks/use-pagination";
 import { cva, VariantProps } from "class-variance-authority";
 
 const buttonVariants = cva(
-    "hover:text-primary inline-flex items-center justify-center border-2 border-border",
+    "hover:text-primary inline-flex items-center justify-center border-2 border-border rounded-md",
     {
         variants: {
             size: {
@@ -145,7 +145,7 @@ const PaginationLink = ({
         aria-current={isActive ? "page" : undefined}
         className={cn(
             buttonVariants({ size }),
-            isActive ? "text-primary font-bold" : "text-secondary",
+            isActive ? "text-primary font-bold" : "text-foreground",
             className
         )}
         {...props}

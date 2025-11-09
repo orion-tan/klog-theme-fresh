@@ -19,10 +19,8 @@ function PostViewSkeleton() {
 
 export default function PostsPage() {
     return (
-        <div className="bg-background-1 text-foreground h-full max-h-screen">
-            <Suspense fallback={<PostViewSkeleton />}>
-                <PostViewTab />
-            </Suspense>
-        </div>
+        <Suspense fallback={<PostViewSkeleton />}>
+            <PostViewTab />
+        </Suspense>
     );
 }

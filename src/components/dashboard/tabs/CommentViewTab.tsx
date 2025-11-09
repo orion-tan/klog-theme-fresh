@@ -152,7 +152,7 @@ export default function PostCommentViewTab({ id }: PostCommentViewTabProps) {
                 </div>
 
                 {/* 评论列表 */}
-                <div className="bg-background-1 border-2 border-border p-4 md:p-6">
+                <div className="bg-surface border-2 border-border p-4 md:p-6">
                     {isLoading ? (
                         <div className="flex items-center justify-center py-12">
                             <Loader2 className="w-10 h-10 animate-spin" />

@@ -1,10 +1,10 @@
 // 管理后台共享布局
 "use client";
 
-import { SidebarProvider, useSidebar } from "@/hooks/dashboard/use-sidebar";
 import { AnimatePresence, motion } from "motion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { SidebarProvider, useSidebar } from "@/hooks/dashboard/use-sidebar";
 import DashboardSideBar from "@/components/dashboard/DashboardSideBar";
 
 const queryClient = new QueryClient();
@@ -27,7 +27,7 @@ function LayoutContent({ children }: DashboardLayoutProps) {
     const { isSidebarOpen, setSidebarOpen } = useSidebar();
 
     return (
-        <div className="min-h-screen w-full bg-background flex overflow-y-hidden">
+        <div className="h-screen max-h-screen w-full bg-background flex overflow-hidden">
             {/* 侧边栏 */}
             <DashboardSideBar />
             {/* 移动端展开时的遮罩层 */}
@@ -45,8 +45,8 @@ function LayoutContent({ children }: DashboardLayoutProps) {
                 )}
             </AnimatePresence>
             {/* 主内容区域 */}
-            <main className="bg-background-1 md:border-l-3 md:border-border flex-1 max-h-screen">
-                <AnimatePresence mode="wait">{children}</AnimatePresence>
+            <main className="bg-background text-foreground md:border-l-3 md:border-border flex-1 h-screen max-h-screen">
+                {children}
             </main>
         </div>
     );

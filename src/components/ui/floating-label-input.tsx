@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 // 定义input变体样式
 const inputVariants = cva(
-    "peer w-full border-2 bg-transparent px-4 py-3 text-foreground outline-none transition-colors",
+    "peer w-full border-2 bg-transparent px-4 py-3 text-foreground outline-none transition-colors rounded-md",
     {
         variants: {
             variant: {
@@ -35,8 +35,8 @@ const labelVariants = cva(
                     "peer-[:not(:placeholder-shown)]:-top-5 peer-[:not(:placeholder-shown)]:left-0"
                 ),
                 material: cn(
-                    "absolute left-4 top-1/2 -translate-y-1/2 bg-background-1 px-1",
-                    "peer-focus:top-0 peer-focus:scale-[0.85]",
+                    "absolute left-4 top-1/2 -translate-y-1/2 px-1 bg-inherit",
+                    "peer-focus:top-0 peer-focus:scale-[0.85] peer-focus:bg-inherit",
                     "peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:scale-[0.85]"
                 ),
                 outline: "relative top-0 left-0 mb-2",
@@ -84,7 +84,7 @@ export const FloatingLabelInput = React.forwardRef<
         const inputVariant = variant as "default" | "material" | "outline";
 
         return (
-            <div className={cn("w-full", className)}>
+            <div className={cn("w-full bg-background", className)}>
                 {/* outline变体：label在外部，不需要特殊容器 */}
                 {isOutline && (
                     <label
@@ -100,6 +100,7 @@ export const FloatingLabelInput = React.forwardRef<
 
                 <div
                     className={cn(
+                        "bg-inherit",
                         "relative transition-all duration-300 ease-in-out",
                         isDefault &&
                             "[&:has(input:not(:placeholder-shown))]:mt-10 [&:has(input:focus)]:mt-10",

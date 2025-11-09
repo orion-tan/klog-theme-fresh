@@ -48,7 +48,7 @@ export function CommentItem({
 
     return (
         <div className="mb-4" style={{ marginLeft: `${indentLevel * 32}px` }}>
-            <div className="border-2 border-border p-4 bg-background-1">
+            <div className="border-2 border-border p-4 bg-surface">
                 {/* 评论头部：作者、邮箱、时间、状态 */}
                 <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-4">
                     <div className="flex flex-col gap-1">

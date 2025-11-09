@@ -5,7 +5,7 @@
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import { ArrowLeft, Menu, UploadIcon } from "lucide-react";
+import { UploadIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { MarkdownEditorWrapper } from "@/components/ui/markdown-editor";
@@ -16,7 +16,7 @@ import { FloatingLabelInput } from "@/components/ui/floating-label-input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/hooks/dashboard/use-sidebar";
-import Link from "next/link";
+import TabLayout from "@/components/dashboard/tabs/TabLayout";
 
 const postsSchema = z.object({
     title: z
@@ -97,319 +97,287 @@ export default function PostNewTab() {
     });
 
     return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                form.handleSubmit();
-            }}
+        <TabLayout
+            title="新建文章"
+            onSidebarMenuClick={() => setSidebarOpen(true)}
+            backLink="/dashboard/posts"
+            backBtnText="返回文章列表"
         >
-            <div className="flex flex-col gap-4 h-full pb-4 overflow-y-auto">
-                {/* 顶部大标题 */}
-                <header className="bg-background flex items-center justify-between px-4 md:px-8 py-4 h-16 border-b-2 border-border sticky top-0 z-8">
-                    <div className="inline-flex items-center gap-4">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="md:hidden"
-                            aria-label="打开菜单"
-                            onClick={() => setSidebarOpen(true)}
-                        >
-                            <Menu size={16} />
-                        </Button>
-                        <Link href="/dashboard/posts">
-                            <Button variant="outline">
-                                <ArrowLeft className="w-4 h-4 mr-2" />
-                                返回文章列表
-                            </Button>
-                        </Link>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    form.handleSubmit();
+                }}
+            >
+                {/* 操作区域 */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <p className="text-xl md:text-2xl font-bold text-primary">
+                        {"新建文章"}
+                    </p>
+                    {/* 操作按钮 */}
+                    <form.Subscribe
+                        selector={(state) => [
+                            state.canSubmit,
+                            state.isSubmitting,
+                        ]}
+                        children={([canSubmit, isSubmitting]) => (
+                            <div className="inline-flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    type="submit"
+                                    disabled={!canSubmit}
+                                    onClick={() => setSubmitStatus("draft")}
+                                >
+                                    {isSubmitting && submitStatus === "draft"
+                                        ? "..."
+                                        : "更新草稿"}
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    type="submit"
+                                    disabled={!canSubmit}
+                                    onClick={() => setSubmitStatus("published")}
+                                >
+                                    {isSubmitting &&
+                                    submitStatus === "published"
+                                        ? "..."
+                                        : "更新发布"}
+                                </Button>
+                            </div>
+                        )}
+                    />
+                </div>
+                {/* 文章元数据区域 */}
+                <div className="border-2 border-border rounded-md space-y-4 pb-4">
+                    <div className="text-lg font-bold py-2 px-4 border-b-2 border-border">
+                        {"元数据"}
                     </div>
-                </header>
-
-                {/* 内容区域 */}
-                <div className="container mx-auto px-2 md:px-4 space-y-4">
-                    {/* 操作区域 */}
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <p className="text-xl md:text-2xl font-bold text-primary">
-                            {"新建文章"}
-                        </p>
-                        {/* 操作按钮 */}
-                        <form.Subscribe
-                            selector={(state) => [
-                                state.canSubmit,
-                                state.isSubmitting,
-                            ]}
-                            children={([canSubmit, isSubmitting]) => (
-                                <div className="inline-flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        type="submit"
-                                        disabled={!canSubmit}
-                                        onClick={() => setSubmitStatus("draft")}
-                                    >
-                                        {isSubmitting &&
-                                        submitStatus === "draft"
-                                            ? "..."
-                                            : "更新草稿"}
-                                    </Button>
-                                    <Button
-                                        variant="primary"
-                                        type="submit"
-                                        disabled={!canSubmit}
-                                        onClick={() =>
-                                            setSubmitStatus("published")
+                    {/* 文章标题和Slug */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <form.Field
+                            name="title"
+                            children={(field) => (
+                                <>
+                                    <FloatingLabelInput
+                                        variant="material"
+                                        label="文章标题"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
                                         }
-                                    >
-                                        {isSubmitting &&
-                                        submitStatus === "published"
-                                            ? "..."
-                                            : "更新发布"}
-                                    </Button>
+                                        onBlur={field.handleBlur}
+                                        error={field.state.meta.errors
+                                            .map((e: any) => e.message)
+                                            .join(", ")}
+                                        className="px-4"
+                                    />
+                                </>
+                            )}
+                        />
+                        <form.Field
+                            name="slug"
+                            children={(field) => (
+                                <>
+                                    <FloatingLabelInput
+                                        label="文章 slug"
+                                        variant="material"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        onBlur={field.handleBlur}
+                                        error={field.state.meta.errors
+                                            .map((e: any) => e.message)
+                                            .join(", ")}
+                                        className="px-4"
+                                    />
+                                </>
+                            )}
+                        />
+                    </div>
+                    {/* 文章封面 */}
+                    <div className="flex flex-col gap-2 px-4">
+                        <form.Field
+                            name="cover_image_url"
+                            children={(field) => (
+                                <div className="flex items-center justify-between gap-2">
+                                    <FloatingLabelInput
+                                        label="封面图片链接"
+                                        variant="material"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value ?? ""}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        onBlur={field.handleBlur}
+                                        error={field.state.meta.errors
+                                            .map((e: any) => e.message)
+                                            .join(", ")}
+                                        className="flex-1"
+                                    />
+
+                                    <label className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border cursor-pointer">
+                                        <UploadIcon className="w-4 h-4 mr-2" />
+                                        上传
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                                const file =
+                                                    e.target.files?.[0];
+                                                if (!file) return;
+                                                try {
+                                                    const res =
+                                                        await klogSdk.media.uploadFile(
+                                                            file
+                                                        );
+                                                    field.handleChange(res.url);
+                                                } catch (e) {
+                                                    console.warn(e);
+                                                }
+                                            }}
+                                        />
+                                    </label>
                                 </div>
                             )}
                         />
                     </div>
-                    {/* 文章元数据区域 */}
-                    <div className="border-2 border-border rounded-md space-y-4 pb-4">
-                        <div className="text-lg font-bold py-2 px-4 border-b-2 border-border">
-                            {"元数据"}
-                        </div>
-                        {/* 文章标题和Slug */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <form.Field
-                                name="title"
-                                children={(field) => (
-                                    <>
-                                        <FloatingLabelInput
-                                            variant="material"
-                                            label="文章标题"
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            onBlur={field.handleBlur}
-                                            error={field.state.meta.errors
-                                                .map((e: any) => e.message)
-                                                .join(", ")}
-                                            className="px-4"
-                                        />
-                                    </>
-                                )}
-                            />
-                            <form.Field
-                                name="slug"
-                                children={(field) => (
-                                    <>
-                                        <FloatingLabelInput
-                                            label="文章 slug"
-                                            variant="material"
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            onBlur={field.handleBlur}
-                                            error={field.state.meta.errors
-                                                .map((e: any) => e.message)
-                                                .join(", ")}
-                                            className="px-4"
-                                        />
-                                    </>
-                                )}
-                            />
-                        </div>
-                        {/* 文章封面 */}
-                        <div className="flex flex-col gap-2 px-4">
-                            <form.Field
-                                name="cover_image_url"
-                                children={(field) => (
-                                    <div className="flex items-center justify-between gap-2">
-                                        <FloatingLabelInput
-                                            label="封面图片链接"
-                                            variant="material"
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value ?? ""}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            onBlur={field.handleBlur}
-                                            error={field.state.meta.errors
-                                                .map((e: any) => e.message)
-                                                .join(", ")}
-                                            className="flex-1"
-                                        />
-
-                                        <label className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border cursor-pointer">
-                                            <UploadIcon className="w-4 h-4 mr-2" />
-                                            上传
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={async (e) => {
-                                                    const file =
-                                                        e.target.files?.[0];
-                                                    if (!file) return;
-                                                    try {
-                                                        const res =
-                                                            await klogSdk.media.uploadFile(
-                                                                file
-                                                            );
-                                                        field.handleChange(
-                                                            res.url
-                                                        );
-                                                    } catch (e) {
-                                                        console.warn(e);
-                                                    }
-                                                }}
-                                            />
-                                        </label>
-                                    </div>
-                                )}
-                            />
-                        </div>
-                        {/* 文章摘要 */}
-                        <div className="flex flex-col gap-2 px-4">
-                            <form.Field
-                                name="excerpt"
-                                children={(field) => (
-                                    <>
-                                        <label htmlFor={field.name}>
-                                            文章摘要
-                                        </label>
-                                        <textarea
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value ?? ""}
-                                            placeholder="输入文章摘要"
-                                            rows={3}
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                )
-                                            }
-                                            className={cn(
-                                                "p-2 border-2 border-border outline-none transition-colors duration-200 ease-in-out",
-                                                "focus:border-primary active:border-primary",
-                                                field.state.meta.isTouched &&
-                                                    !field.state.meta.isValid &&
-                                                    "border-red-500"
-                                            )}
-                                        />
-                                    </>
-                                )}
-                            />
-                        </div>
-                        {/* 文章分类 */}
-                        <div className="flex flex-col gap-2 px-4">
-                            <form.Field
-                                name="category_id"
-                                children={(field) => (
-                                    <>
-                                        <label htmlFor={field.name}>分类</label>
-                                        <Select
-                                            options={[
-                                                { label: "未分类", value: 0 },
-                                                ...(allCategories?.map(
-                                                    (c: Category) => ({
-                                                        label: c.name,
-                                                        value: c.id,
-                                                    })
-                                                ) || []),
-                                            ]}
-                                            value={field.state.value ?? 0}
-                                            onValueChange={(value) =>
-                                                field.handleChange(
-                                                    value
-                                                        ? Number(value)
-                                                        : undefined
-                                                )
-                                            }
-                                            onBlur={field.handleBlur}
-                                        />
-                                    </>
-                                )}
-                            />
-                        </div>
-                        {/* 文章标签 */}
-                        <div className="flex flex-col gap-2 px-4">
-                            <form.Field
-                                name="tags"
-                                children={(field) => (
-                                    <>
-                                        <FloatingLabelInput
-                                            label="标签（逗号分隔）"
-                                            variant="outline"
-                                            id={field.name}
-                                            name={field.name}
-                                            value={(
-                                                field.state.value || []
-                                            ).join(",")}
-                                            placeholder="如：前端,React,TypeScript"
-                                            onChange={(e) =>
-                                                field.handleChange(
-                                                    e.target.value
-                                                        .replace(/，/g, ",")
-                                                        .split(",")
-                                                        .map((s) => s.trim())
-                                                        .filter(Boolean)
-                                                )
-                                            }
-                                        />
-                                        {allTags && allTags.length > 0 ? (
-                                            <div className="text-xs text-muted-foreground">
-                                                已有：
-                                                {allTags
-                                                    .map((t: Tag) => t.slug)
-                                                    .join("，")}
-                                            </div>
-                                        ) : null}
-                                    </>
-                                )}
-                            />
-                        </div>
-
-                        {submitError ? (
-                            <div className="text-red-500 text-sm">
-                                {submitError}
-                            </div>
-                        ) : null}
-                    </div>
-                    {/* 内容编辑区域 */}
-                    <div className="border-2 border-border rounded-md space-y-4">
-                        <div className="text-lg font-bold py-2 px-4 border-b-2 border-border">
-                            {"内容编辑"}
-                        </div>
+                    {/* 文章摘要 */}
+                    <div className="flex flex-col gap-2 px-4">
                         <form.Field
-                            name="content"
+                            name="excerpt"
                             children={(field) => (
-                                <MarkdownEditorWrapper
-                                    value={field.state.value}
-                                    onChange={(v) => field.handleChange(v)}
-                                    onImageUpload={async (file) => {
-                                        const res =
-                                            await klogSdk.media.uploadFile(
-                                                file
-                                            );
-                                        return res.url;
-                                    }}
-                                    className="p-0"
-                                />
+                                <>
+                                    <label htmlFor={field.name}>文章摘要</label>
+                                    <textarea
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value ?? ""}
+                                        placeholder="输入文章摘要"
+                                        rows={3}
+                                        onChange={(e) =>
+                                            field.handleChange(e.target.value)
+                                        }
+                                        className={cn(
+                                            "p-2 border-2 border-border outline-none transition-colors duration-200 ease-in-out",
+                                            "focus:border-primary active:border-primary",
+                                            field.state.meta.isTouched &&
+                                                !field.state.meta.isValid &&
+                                                "border-red-500"
+                                        )}
+                                    />
+                                </>
                             )}
                         />
                     </div>
+                    {/* 文章分类 */}
+                    <div className="flex flex-col gap-2 px-4">
+                        <form.Field
+                            name="category_id"
+                            children={(field) => (
+                                <>
+                                    <label htmlFor={field.name}>分类</label>
+                                    <Select
+                                        options={[
+                                            {
+                                                label: "未分类",
+                                                value: 0,
+                                            },
+                                            ...(allCategories?.map(
+                                                (c: Category) => ({
+                                                    label: c.name,
+                                                    value: c.id,
+                                                })
+                                            ) || []),
+                                        ]}
+                                        value={field.state.value ?? 0}
+                                        onValueChange={(value) =>
+                                            field.handleChange(
+                                                value
+                                                    ? Number(value)
+                                                    : undefined
+                                            )
+                                        }
+                                        onBlur={field.handleBlur}
+                                    />
+                                </>
+                            )}
+                        />
+                    </div>
+                    {/* 文章标签 */}
+                    <div className="flex flex-col gap-2 px-4">
+                        <form.Field
+                            name="tags"
+                            children={(field) => (
+                                <>
+                                    <FloatingLabelInput
+                                        label="标签（逗号分隔）"
+                                        variant="outline"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={(field.state.value || []).join(
+                                            ","
+                                        )}
+                                        placeholder="如：前端,React,TypeScript"
+                                        onChange={(e) =>
+                                            field.handleChange(
+                                                e.target.value
+                                                    .replace(/，/g, ",")
+                                                    .split(",")
+                                                    .map((s) => s.trim())
+                                                    .filter(Boolean)
+                                            )
+                                        }
+                                    />
+                                    {allTags && allTags.length > 0 ? (
+                                        <div className="text-xs text-muted-foreground">
+                                            已有：
+                                            {allTags
+                                                .map((t: Tag) => t.slug)
+                                                .join("，")}
+                                        </div>
+                                    ) : null}
+                                </>
+                            )}
+                        />
+                    </div>
+
+                    {submitError ? (
+                        <div className="text-red-500 text-sm">
+                            {submitError}
+                        </div>
+                    ) : null}
                 </div>
-            </div>
-        </form>
+                {/* 内容编辑区域 */}
+                <div className="border-2 border-border rounded-md space-y-4">
+                    <div className="text-lg font-bold py-2 px-4 border-b-2 border-border">
+                        {"内容编辑"}
+                    </div>
+                    <form.Field
+                        name="content"
+                        children={(field) => (
+                            <MarkdownEditorWrapper
+                                value={field.state.value}
+                                onChange={(v) => field.handleChange(v)}
+                                onImageUpload={async (file) => {
+                                    const res = await klogSdk.media.uploadFile(
+                                        file
+                                    );
+                                    return res.url;
+                                }}
+                                className="p-0"
+                            />
+                        )}
+                    />
+                </div>
+            </form>
+        </TabLayout>
     );
 }

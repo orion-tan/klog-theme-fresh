@@ -67,13 +67,13 @@ export function PostFilters({
     return (
         <div
             className={cn(
-                "border-2 border-border p-4 bg-background-1",
+                "border-2 border-border p-4 rounded-md",
                 "flex flex-col gap-4",
                 className
             )}
         >
             {/* 标题 */}
-            <h3 className="text-lg font-bold">🔍 筛选条件</h3>
+            <h3 className="text-lg font-bold">筛选条件</h3>
 
             {/* 筛选条件 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

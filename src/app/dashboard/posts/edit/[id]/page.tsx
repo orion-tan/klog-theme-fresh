@@ -27,10 +27,8 @@ export default async function PostEditPage({ params }: PostEditPageProps) {
     const { id } = await params;
 
     return (
-        <div className="bg-background-1 text-foreground h-full max-h-screen">
-            <Suspense fallback={<PostEditSkeleton />}>
-                <PostEditTab postId={Number(id)} />
-            </Suspense>
-        </div>
+        <Suspense fallback={<PostEditSkeleton />}>
+            <PostEditTab postId={Number(id)} mode="edit" />
+        </Suspense>
     );
 }

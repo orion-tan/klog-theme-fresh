@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { siteConfig } from "@/lib/config";
-import PostNewTab from "@/components/dashboard/tabs/PostNewTab";
+import PostNewTab from "@/components/dashboard/tabs/PostEditTab";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -19,10 +19,8 @@ function PostViewSkeleton() {
 
 export default function PostsNewPage() {
     return (
-        <div className="bg-background-1 text-foreground h-full max-h-screen">
-            <Suspense fallback={<PostViewSkeleton />}>
-                <PostNewTab />
-            </Suspense>
-        </div>
+        <Suspense fallback={<PostViewSkeleton />}>
+            <PostNewTab mode="new" />
+        </Suspense>
     );
 }

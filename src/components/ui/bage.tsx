@@ -3,16 +3,15 @@
 import { cn } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 
-const bageVariants = cva("p-1 border-2 border-border text-sm", {
+const bageVariants = cva("p-1 border-2 border-border text-sm rounded-sm", {
     variants: {
         variant: {
             primary: "bg-primary",
             secondary: "bg-secondary",
             outline: "bg-transparent",
-            success: "border-green-500 text-green-500",
-            danger: "border-red-500 text-red-500",
-            warning: "border-yellow-500 text-yellow-500",
-            info: "border-blue-500 text-blue-500",
+            success: "border-success text-success",
+            danger: "border-error text-error",
+            warning: "border-warning text-warning",
         },
     },
     defaultVariants: {

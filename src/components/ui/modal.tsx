@@ -69,7 +69,7 @@ export function Modal({
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
                         <motion.div
                             className={cn(
-                                "bg-background-1 border-2 border-border p-6 md:p-8",
+                                "border-2 border-border p-6 md:p-8 bg-background rounded-md",
                                 "max-w-md w-full max-h-[90vh] overflow-y-auto scrollbar-thin",
                                 "shadow-[4px_4px_0_0_var(--border)]",
                                 "pointer-events-auto",

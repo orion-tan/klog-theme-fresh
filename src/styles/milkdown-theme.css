@@ -1,6 +1,6 @@
 /* 自适应颜色 */
 .milkdown {
-    --crepe-color-background: var(--background-1);
+    --crepe-color-background: var(--background);
     --crepe-color-on-background: var(--foreground);
     --crepe-color-surface: var(--crepe-surface);
     --crepe-color-surface-low: var(--crepe-surface-low);

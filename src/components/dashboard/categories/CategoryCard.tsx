@@ -64,7 +64,7 @@ export function CategoryCard({
     return (
         <div
             className={cn(
-                "border-2 border-border p-4 bg-background-1 transition-all",
+                "border-2 border-border p-4 bg-surface transition-all rounded-md",
                 "shadow-[2px_2px_0_0_var(--border)]",
                 className
             )}

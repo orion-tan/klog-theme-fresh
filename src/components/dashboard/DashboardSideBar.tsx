@@ -110,7 +110,7 @@ function NavItem({ href, label, icon, active }: NavItemProps) {
         <Link
             href={href}
             className={cn(
-                "relative flex items-center gap-4 px-4 py-2 border-2 border-border transition-all duration-200",
+                "relative flex items-center gap-4 px-4 py-2 border-2 border-border transition-all duration-200 rounded-md",
                 "-translate-y-0.5 -translate-x-0.5 shadow-[2px_2px_0_0_var(--border)]",
                 "md:translate-x-0 md:translate-y-0 md:shadow-none",
                 "md:hover:-translate-y-1 md:hover:translate-x-1 md:hover:shadow-[-4px_4px_0_0_var(--border)]",
@@ -164,14 +164,14 @@ export default function DashboardSideBar() {
             variants={sidebarVariants}
             animate={isSidebarOpen || isDesktop ? "open" : "closed"}
             className={cn(
-                "bg-background w-[300px] md:w-[320px] h-full z-11 fixed top-0 left-0",
+                "bg-background w-[300px] md:w-[320px] h-screen z-11 fixed top-0 left-0",
                 "md:relative md:z-auto",
                 "border-r-2 border-border md:border-none",
-                "overflow-y-auto max-h-screen scrollbar-none"
+                "overflow-y-auto scrollbar-none shrink-0"
             )}
         >
             {/* 侧边栏顶部 */}
-            <div className="bg-background p-4 flex justify-between md:justify-center items-center sticky top-0 z-11">
+            <div className="bg-inherit p-4 flex justify-between md:justify-center items-center sticky top-0 z-11">
                 <p className="text-xl font-bold text-center">侧边栏</p>
                 <button
                     onClick={() => setSidebarOpen(false)}
@@ -194,7 +194,7 @@ export default function DashboardSideBar() {
                 <Link
                     href="/dashboard/settings"
                     className={cn(
-                        "flex items-center gap-4 px-4 py-2 border-2 border-border transition-all duration-200",
+                        "flex items-center gap-4 px-4 py-2 border-2 border-border transition-all duration-200 rounded-md",
                         "-translate-y-0.5 -translate-x-0.5 shadow-[2px_2px_0_0_var(--border)]",
                         "md:translate-x-0 md:translate-y-0 md:shadow-none",
                         "md:hover:-translate-y-1 md:hover:translate-x-1 md:hover:shadow-[-4px_4px_0_0_var(--border)]",
@@ -210,7 +210,7 @@ export default function DashboardSideBar() {
                     size={6}
                     text={isDark ? "夜间模式" : "日间模式"}
                     className={cn(
-                        "px-4 py-2 gap-4 justify-start cursor-pointer border-2 border-border transition-all duration-200",
+                        "px-4 py-2 gap-4 justify-start cursor-pointer border-2 border-border transition-all duration-200 rounded-md",
                         "-translate-y-0.5 -translate-x-0.5 shadow-[2px_2px_0_0_var(--border)]",
                         "md:-translate-x-1 md:-translate-y-1 md:shadow-[4px_4px_0_0_var(--border)]",
                         "active:translate-x-0 active:translate-y-0 active:shadow-none",
