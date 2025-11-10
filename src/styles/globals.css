@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @plugin 'tailwind-scrollbar';
 
@@ -11,11 +12,17 @@
     --primary: #078080;
     --primary-fg: #fffffe;
     --secondary: #f45d48;
-    --tertiary: #f8f5f2;
+    --secondary-fg: #fffffe;
+    --tertiary: #f4caa1;
+    --tertiary-fg: #fffffe;
     --border: #383838;
+    --shadow: #000000;
     --success: #10b981;
+    --success-fg: #fffffe;
     --warning: #f59e0b;
+    --warning-fg: #fffffe;
     --error: #ef4444;
+    --error-fg: #fffffe;
 
     /* crepe theme color */
     --crepe-surface: #f7f7f7;
@@ -36,20 +43,35 @@
     --crepe-shadow-1: rgba(0, 0, 0, 0.15);
     --crepe-shadow-2: rgba(0, 0, 0, 0.3);
     /* end crepe theme color */
+
+    --sidebar: hsl(0 0% 98%);
+    --sidebar-foreground: hsl(240 5.3% 26.1%);
+    --sidebar-primary: hsl(240 5.9% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(240 4.8% 95.9%);
+    --sidebar-accent-foreground: hsl(240 5.9% 10%);
+    --sidebar-border: hsl(220 13% 91%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 .dark {
-    --background: #31363f;
+    --background: #222730;
     --surface: #222831;
     --foreground: #eeeeee;
     --primary: #50c4cf;
     --primary-fg: #fffffe;
     --secondary: #994ff3;
+    --secondary-fg: #fffffe;
     --tertiary: #fbdd74;
-    --border: #cad1d1;
+    --tertiary-fg: #fffffe;
+    --border: #1a1919;
+    --shadow: #000000;
     --success: #34d399;
+    --success-fg: #fffffe;
     --warning: #fbbf24;
+    --warning-fg: #fffffe;
     --error: #f87171;
+    --error-fg: #fffffe;
 
     /* crepe theme color */
     --crepe-surface: #18120b;
@@ -70,6 +92,15 @@
     --crepe-shadow-1: rgba(255, 255, 255, 0.3);
     --crepe-shadow-2: rgba(255, 255, 255, 0.15);
     /* end crepe theme color */
+
+    --sidebar: hsl(240 5.9% 10%);
+    --sidebar-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-primary: hsl(224.3 76.3% 48%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+    --sidebar-accent: hsl(240 3.7% 15.9%);
+    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-border: hsl(240 3.7% 15.9%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 @theme inline {
@@ -79,19 +110,33 @@
     --color-primary: var(--primary);
     --color-primary-fg: var(--primary-fg);
     --color-secondary: var(--secondary);
+    --color-secondary-fg: var(--secondary-fg);
     --color-tertiary: var(--tertiary);
+    --color-tertiary-fg: var(--tertiary-fg);
     --color-border: var(--border);
+    --color-shadow: var(--shadow);
     --color-success: var(--success);
+    --color-success-fg: var(--success-fg);
     --color-warning: var(--warning);
+    --color-warning-fg: var(--warning-fg);
     --color-error: var(--error);
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
+    --color-error-fg: var(--error-fg);
+    --font-mono: var(--font-lxgw-wenkai-mono-tc);
+
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
 }
 
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-mono), Arial, Helvetica, sans-serif;
 }
 
 html,
@@ -107,4 +152,13 @@ body {
 ::view-transition-new(root) {
     animation: none;
     mix-blend-mode: normal;
+}
+
+@layer base {
+    /* * {
+        @apply border-border outline-ring/50;
+    } */
+    body {
+        @apply bg-background text-foreground;
+    }
 }

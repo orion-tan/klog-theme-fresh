@@ -1,37 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "@/styles/globals.css";
+import { LXGW_WenKai_Mono_TC } from "next/font/google";
+
 import ThemeProvider from "@/providers/theme-provider";
+import "@/styles/globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const lxgwWenKaiMonoTC = LXGW_WenKai_Mono_TC({
+    weight: ["400", "700"],
+    variable: "--font-lxgw-wenkai-mono-tc",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Klog",
-  description: "Klog is a platform for creating and sharing your thoughts and ideas.",
+    title: "Klog",
+    description:
+        "Klog is a platform for creating and sharing your thoughts and ideas.",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en" suppressHydrationWarning>
+            <body className={`${lxgwWenKaiMonoTC.className} antialiased`}>
+                <ThemeProvider>{children}</ThemeProvider>
+            </body>
+        </html>
+    );
 }
