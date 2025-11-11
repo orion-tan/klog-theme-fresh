@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 // 定义input变体样式
 const inputVariants = cva(
     [
-        "peer w-full border-2 bg-transparent px-3 py-1 text-foreground outline-none transition-colors rounded-md",
+        "peer w-full bg-transparent px-3 py-1 text-foreground outline-none transition-colors rounded-md",
         "file:text-foreground placeholder:text-foreground/80 selection:bg-primary selection:text-primary-fg",
         "h-9 min-w-0 rounded-md text-base transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
         "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "border-2 border-border, aria-invalid:border-error, focus:border-primary",
+        "border-2 border-border aria-invalid:border-error focus:border-primary",
     ],
     {
         variants: {
@@ -58,7 +58,6 @@ interface FloatingLabelInputProps
     label: string;
     htmlFor?: string;
     error?: string;
-    onClear?: () => void;
     /**
      * @deprecated placeholder不会生效,请使用 label
      */
@@ -75,10 +74,10 @@ export const FloatingLabelInput = React.forwardRef<
             id,
             error,
             htmlFor,
-            onClear,
             className,
             value,
             variant = "material",
+            type,
             ...props
         },
         ref
@@ -107,6 +106,8 @@ export const FloatingLabelInput = React.forwardRef<
                     <input
                         ref={ref}
                         id={inputId}
+                        type={type}
+                        data-slot="input"
                         value={value}
                         className={cn(
                             inputVariants({ variant: inputVariant }),

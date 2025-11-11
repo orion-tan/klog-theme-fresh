@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hookform/resolvers':
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.66.0(react@19.2.0))
       '@milkdown/crepe':
         specifier: ^7.17.1
         version: 7.17.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.3)(typescript@5.9.3)
@@ -47,6 +50,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.2)(react@19.2.0)
+      '@radix-ui/react-tabs':
+        specifier: ^1.1.13
+        version: 1.1.13(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -107,6 +113,9 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      yup:
+        specifier: ^1.7.1
+        version: 1.7.1
       zod:
         specifier: ^4.1.12
         version: 4.1.12
@@ -373,6 +382,11 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@hookform/resolvers@5.2.2':
+    resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
+    peerDependencies:
+      react-hook-form: ^7.55.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -1051,6 +1065,19 @@ packages:
       '@types/react':
         optional: true
 
+  '@radix-ui/react-tabs@1.1.13':
+    resolution: {integrity: sha512-7xdcatg7/U+7+Udyoj2zodtI9H/IIopqo+YOIcZOq1nJwXWBZ9p8xiu5llXlekDbZkca79a/fozEYQXIA4sW6A==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
   '@radix-ui/react-tooltip@1.2.8':
     resolution: {integrity: sha512-tY7sVt1yL9ozIxvmbtN5qtmH2krXcBCfjEiCgKGLqunJHvgvZG2Pcl2oQ3kbcZARb1BGEHdkLzcYGO8ynVlieg==}
     peerDependencies:
@@ -1154,6 +1181,9 @@ packages:
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
+
+  '@standard-schema/utils@0.3.0':
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
@@ -2783,6 +2813,9 @@ packages:
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
+  property-expr@2.0.6:
+    resolution: {integrity: sha512-SVtmxhRE/CGkn3eZY1T6pC8Nln6Fr/lu1mKSgRud0eC73whjGfoAogbn78LkD8aFL0zz3bAFerKSnOl7NlErBA==}
+
   prosemirror-changeset@2.3.1:
     resolution: {integrity: sha512-j0kORIBm8ayJNl3zQvD1TTPHJX3g042et6y/KQhZhnPrruO8exkTgG8X+NRpj7kIyMMEx74Xb3DyMIBtO0IKkQ==}
 
@@ -3111,6 +3144,9 @@ packages:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
 
+  tiny-case@1.0.3:
+    resolution: {integrity: sha512-Eet/eeMhkO6TX8mnUteS9zgPbUMQa4I6Kkp5ORiBD5476/m+PIRiumP5tmh5ioJpH7k51Kehawy2UDfsnxxY8Q==}
+
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
@@ -3118,6 +3154,9 @@ packages:
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
+
+  toposort@2.0.2:
+    resolution: {integrity: sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==}
 
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
@@ -3140,6 +3179,10 @@ packages:
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
+
+  type-fest@2.19.0:
+    resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
+    engines: {node: '>=12.20'}
 
   typed-array-buffer@1.0.3:
     resolution: {integrity: sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==}
@@ -3279,6 +3322,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  yup@1.7.1:
+    resolution: {integrity: sha512-GKHFX2nXul2/4Dtfxhozv701jLQHdf6J34YDh2cEkpqoo8le5Mg6/LrdseVLrFarmFygZTlfIhHx/QKfb/QWXw==}
 
   zod-validation-error@4.0.2:
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
@@ -3733,6 +3779,11 @@ snapshots:
       react-dom: 19.2.0(react@19.2.0)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@hookform/resolvers@5.2.2(react-hook-form@7.66.0(react@19.2.0))':
+    dependencies:
+      '@standard-schema/utils': 0.3.0
+      react-hook-form: 7.66.0(react@19.2.0)
 
   '@humanfs/core@0.19.1': {}
 
@@ -4612,6 +4663,22 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.2
 
+  '@radix-ui/react-tabs@1.1.13(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.3
+      '@radix-ui/react-context': 1.1.2(@types/react@19.2.2)(react@19.2.0)
+      '@radix-ui/react-direction': 1.1.1(@types/react@19.2.2)(react@19.2.0)
+      '@radix-ui/react-id': 1.1.1(@types/react@19.2.2)(react@19.2.0)
+      '@radix-ui/react-presence': 1.1.5(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@radix-ui/react-primitive': 2.1.3(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@radix-ui/react-roving-focus': 1.1.11(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@radix-ui/react-use-controllable-state': 1.2.2(@types/react@19.2.2)(react@19.2.0)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+    optionalDependencies:
+      '@types/react': 19.2.2
+      '@types/react-dom': 19.2.2(@types/react@19.2.2)
+
   '@radix-ui/react-tooltip@1.2.8(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@radix-ui/primitive': 1.1.3
@@ -4698,6 +4765,8 @@ snapshots:
   '@radix-ui/rect@1.1.1': {}
 
   '@rtsao/scc@1.1.0': {}
+
+  '@standard-schema/utils@0.3.0': {}
 
   '@swc/helpers@0.5.15':
     dependencies:
@@ -6663,6 +6732,8 @@ snapshots:
       object-assign: 4.1.1
       react-is: 16.13.1
 
+  property-expr@2.0.6: {}
+
   prosemirror-changeset@2.3.1:
     dependencies:
       prosemirror-transform: 1.10.4
@@ -7106,6 +7177,8 @@ snapshots:
 
   tapable@2.3.0: {}
 
+  tiny-case@1.0.3: {}
+
   tinyglobby@0.2.15:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.3)
@@ -7114,6 +7187,8 @@ snapshots:
   to-regex-range@5.0.1:
     dependencies:
       is-number: 7.0.0
+
+  toposort@2.0.2: {}
 
   trough@2.2.0: {}
 
@@ -7135,6 +7210,8 @@ snapshots:
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
+
+  type-fest@2.19.0: {}
 
   typed-array-buffer@1.0.3:
     dependencies:
@@ -7350,6 +7427,13 @@ snapshots:
   yallist@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  yup@1.7.1:
+    dependencies:
+      property-expr: 2.0.6
+      tiny-case: 1.0.3
+      toposort: 2.0.2
+      type-fest: 2.19.0
 
   zod-validation-error@4.0.2(zod@4.1.12):
     dependencies:

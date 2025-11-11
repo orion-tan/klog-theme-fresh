@@ -2,143 +2,116 @@
 
 "use client";
 
-import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
-import { z } from "zod";
+import { useEffect, useState } from "react";
 import { KLogError, NetworkError } from "klog-sdk";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { toast } from "sonner";
 
 import { getKLogSDK } from "@/lib/api-request";
-import { Button } from "@/components/ui/button";
-import { FloatingLabelInput } from "@/components/ui/floating-label-input";
+import { Button } from "@/components/mui/button";
+import { FloatingLabelInput } from "@/components/mui/floating-label-input";
+import { Toaster } from "@/components/mui/sonner";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardFooter,
+    CardTitle,
+    CardDescription,
+} from "@/components/mui/card";
 
-const loginSchema = z.object({
-    login: z
+const loginSchema = yup.object({
+    login: yup
         .string()
         .min(1, "用户名或邮箱不能为空")
-        .max(30, "用户名或邮箱长度超出限制"),
-    password: z.string().min(8, "密码不低于8位").max(30, "密码长度超出限制"),
+        .max(30, "用户名或邮箱长度超出限制")
+        .required(),
+    password: yup
+        .string()
+        .min(8, "密码不低于8位")
+        .max(30, "密码长度超出限制")
+        .required(),
 });
 
-export default function LoginPageComponent() {
-    const [error, setError] = useState<string | null>(null);
-    const searchParams = useSearchParams();
-    const redirect = searchParams.get("redirect");
+export default function LoginPageComponent({
+    redirect,
+}: {
+    redirect?: string;
+}) {
+    const [error, setError] = useState<string | undefined>(undefined);
     const router = useRouter();
 
-    const form = useForm({
-        defaultValues: {
-            login: "",
-            password: "",
-        },
-        validators: {
-            onChange: loginSchema,
-        },
-        onSubmit: async ({ value }) => {
-            try {
-                setError(null);
-                await getKLogSDK().auth.login(value);
-                if (redirect) {
-                    router.replace(redirect);
-                } else {
-                    router.replace("/");
-                }
-            } catch (e) {
-                if (e instanceof NetworkError) {
-                    console.warn(e.message);
-                    setError(`登录失败：${e.message}`);
-                } else if (e instanceof KLogError) {
-                    console.warn(e.message);
-                    setError(`登录失败：${e.message}`);
-                }
-            }
-        },
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(loginSchema),
     });
 
+    const onSubmit: SubmitHandler<yup.InferType<typeof loginSchema>> = async (
+        data
+    ) => {
+        try {
+            setError(undefined);
+            await getKLogSDK().auth.login(data);
+            if (redirect) {
+                router.replace(redirect);
+            } else {
+                router.replace("/");
+            }
+        } catch (error) {
+            if (error instanceof NetworkError) {
+                console.warn(error.message);
+                setError(`登录失败：${error.message}`);
+            } else if (error instanceof KLogError) {
+                console.warn(error.message);
+                setError(`登录失败：${error.message}`);
+            }
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+        }
+    }, [error]);
+
     return (
-        <div className="flex flex-col items-center justify-center h-full px-4">
-            <h1 className="font-bold text-2xl text-center mb-4">登录</h1>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    form.handleSubmit();
-                }}
-                className="space-y-4"
-            >
-                {/* 用户名或邮箱 */}
-                <form.Field
-                    name="login"
-                    children={(field) => {
-                        return (
-                            <FloatingLabelInput
-                                error={field.state.meta.errors
-                                    .map((e) => e?.message)
-                                    .join(", ")}
-                                htmlFor={field.name}
-                                label="用户名或邮箱"
-                                name={field.name}
-                                value={field.state.value}
-                                onBlur={field.handleBlur}
-                                onChange={(e) =>
-                                    field.handleChange(e.target.value)
-                                }
-                            />
-                        );
-                    }}
-                />
-
-                {/* 密码 */}
-                <form.Field
-                    name="password"
-                    children={(field) => {
-                        return (
-                            <FloatingLabelInput
-                                error={field.state.meta.errors
-                                    .map((e) => e?.message)
-                                    .join(", ")}
-                                htmlFor={field.name}
-                                label="密码"
-                                name={field.name}
-                                value={field.state.value}
-                                onBlur={field.handleBlur}
-                                onChange={(e) =>
-                                    field.handleChange(e.target.value)
-                                }
-                            />
-                        );
-                    }}
-                />
-
-                {/* 提交按钮 */}
-                <form.Subscribe
-                    selector={(state) => [state.canSubmit, state.isSubmitting]}
-                    children={([canSubmit, isSubmitting]) => {
-                        return (
-                            <div>
-                                <Button
-                                    type="submit"
-                                    disabled={!canSubmit}
-                                    className="w-full mt-5"
-                                    variant="outline"
-                                    size="lg"
-                                >
-                                    {isSubmitting
-                                        ? "..."
-                                        : !canSubmit
-                                        ? "不能登录"
-                                        : "登录"}
-                                </Button>
-                                {error != null && (
-                                    <div className="text-red-500 text-sm">
-                                        {error}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }}
-                />
+        <>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>登录</CardTitle>
+                        <CardDescription>
+                            要获取更多功能，请先登录
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6">
+                        <FloatingLabelInput
+                            label="用户名或邮箱"
+                            {...register("login")}
+                            error={errors.login?.message}
+                            className="bg-surface"
+                        />
+                        <FloatingLabelInput
+                            label="密码"
+                            type="password"
+                            {...register("password")}
+                            error={errors.password?.message}
+                            className="bg-surface"
+                        />
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit">登录</Button>
+                    </CardFooter>
+                </Card>
             </form>
-        </div>
+            <Toaster />
+        </>
     );
 }

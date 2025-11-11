@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { LXGW_WenKai_Mono_TC } from "next/font/google";
 
 import ThemeProvider from "@/providers/theme-provider";
+import { ThemeToggleProvider } from "@/hooks/use-theme-toggle";
+
 import "@/styles/globals.css";
 
 const lxgwWenKaiMonoTC = LXGW_WenKai_Mono_TC({
@@ -24,7 +26,9 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={`${lxgwWenKaiMonoTC.className} antialiased`}>
-                <ThemeProvider>{children}</ThemeProvider>
+                <ThemeProvider>
+                    <ThemeToggleProvider>{children}</ThemeToggleProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

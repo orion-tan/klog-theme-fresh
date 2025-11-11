@@ -380,11 +380,7 @@ export default function HomePage() {
                 </ContextMenu>
 
                 <Input placeholder="输入测试" className="w-[400px]" />
-                <FloatingLabelInput
-                    label="输入测试"
-                    error="错误信息你捶捶哦"
-                    className="w-[400px]"
-                />
+                <FloatingLabelInput label="输入测试" className="w-[400px]" />
 
                 <Pagination>
                     <PaginationContent>

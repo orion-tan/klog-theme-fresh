@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { UploadIcon } from "lucide-react";
 import { useSidebar } from "@/hooks/dashboard/use-sidebar";
-import { FloatingLabelInput } from "@/components/ui/floating-label-input";
+import { FloatingLabelInput } from "@/components/mui/floating-label-input";
 import TabLayout from "@/components/dashboard/tabs/TabLayout";
 
 const postsSchema = z.object({
@@ -409,7 +409,7 @@ function PostEditForm({
                                 <>
                                     <FloatingLabelInput
                                         label="标签（逗号分隔）"
-                                        variant="outline"
+                                        variant="material"
                                         id={field.name}
                                         name={field.name}
                                         value={(field.state.value || []).join(
