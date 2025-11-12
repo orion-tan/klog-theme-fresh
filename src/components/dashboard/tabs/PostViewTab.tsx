@@ -6,23 +6,34 @@ import Link from "next/link";
 import { getKLogSDK } from "@/lib/api-request";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { Loader2, PlusIcon } from "lucide-react";
+import { Loader2, Plus, FileText, Search, AlertCircle } from "lucide-react";
 
-import TabLayout from "@/components/dashboard/tabs/TabLayout";
-import { NumberedPagination } from "@/components/ui/pagination";
-import PostsList from "@/components/dashboard/post/PostsList";
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/hooks/dashboard/use-sidebar";
+import PostsTable from "@/components/dashboard/post/PostsTable";
+import { Button } from "@/components/mui/button";
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/mui/breadcrumb";
 import {
     PostFilters,
     PostFiltersState,
 } from "@/components/dashboard/filters/PostFilters";
+import {
+    Empty,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+    EmptyDescription,
+    EmptyContent,
+} from "@/components/mui/empty";
 
 // 文章管理界面 Tab 界面
 
 export default function PostViewTab() {
-    const { setSidebarOpen } = useSidebar();
-
     // 利用kLogSDK获取数据并分页展示
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, _setPageSize] = useState(5);
@@ -44,6 +55,7 @@ export default function PostViewTab() {
         data: pageData,
         isLoading,
         error,
+        refetch,
     } = useQuery({
         queryKey: [
             "posts",
@@ -72,70 +84,139 @@ export default function PostViewTab() {
         );
     }, [pageData, filters.title]);
 
-    return (
-        <TabLayout
-            title="我的文章"
-            onSidebarMenuClick={() => setSidebarOpen(true)}
-        >
-            {/* 顶部新建文章 */}
-            <div className="w-full flex items-center justify-center gap-4 md:justify-start self-end">
-                <Link href="/dashboard/posts/new">
-                    <Button variant="primary">
-                        <PlusIcon className="w-4 h-4 mr-2" />
-                        新建文章
-                    </Button>
-                </Link>
-            </div>
-            {/* 筛选器 */}
-            <PostFilters
-                categories={categories || []}
-                onFilterChange={setFilters}
-                className="shrink-0"
-            />
+    // 判断是否有过滤条件
+    const hasActiveFilters = useMemo(() => {
+        return !!(
+            filters.title ||
+            filters.category !== undefined ||
+            filters.status !== undefined
+        );
+    }, [filters]);
 
-            {/* 中间文字管理列表区域 */}
-            <section className="flex flex-col flex-1 min-h-0 overflow-y-auto scrollbar-thin">
+    // 判断是否为过滤后无结果
+    const isFilteredEmpty = useMemo(() => {
+        return (
+            hasActiveFilters &&
+            filteredPosts.length === 0 &&
+            (pageData?.data?.length ?? 0) > 0
+        );
+    }, [hasActiveFilters, filteredPosts.length, pageData?.data?.length]);
+
+    return (
+        <div className="flex flex-col gap-4">
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/admin">概览</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>文章管理</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-2xl font-bold tracking-tight text-foreground">
+                            所有文章
+                        </h3>
+                        <p className="text-muted-foreground mt-1">
+                            管理和编辑您的博客文章
+                        </p>
+                    </div>
+                    <Link href="/admin/posts/new">
+                        <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            新建文章
+                        </Button>
+                    </Link>
+                </div>
+                <PostFilters
+                    categories={categories ?? []}
+                    onFilterChange={setFilters}
+                />
                 {isLoading ? (
-                    <div className="flex items-center justify-center h-full">
-                        <Loader2 className="w-10 h-10 animate-spin" />
+                    <div className="flex flex-col items-center justify-center py-12">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
+                        <p className="text-sm text-muted-foreground">
+                            正在加载文章...
+                        </p>
                     </div>
                 ) : error ? (
-                    <div className="flex items-center justify-center h-full">
-                        <p className="text-red-500">{error.message}</p>
-                    </div>
+                    <Empty className="py-12">
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <AlertCircle className="h-6 w-6 text-destructive" />
+                            </EmptyMedia>
+                            <EmptyTitle>加载失败</EmptyTitle>
+                            <EmptyDescription>
+                                {error instanceof Error
+                                    ? error.message
+                                    : "加载文章时发生错误，请稍后重试"}
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    refetch();
+                                }}
+                            >
+                                重新加载
+                            </Button>
+                        </EmptyContent>
+                    </Empty>
+                ) : isFilteredEmpty ? (
+                    <Empty className="py-12">
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <Search className="h-6 w-6 text-muted-foreground" />
+                            </EmptyMedia>
+                            <EmptyTitle>未找到匹配的文章</EmptyTitle>
+                            <EmptyDescription>
+                                当前筛选条件下没有找到匹配的文章，请尝试调整筛选条件。
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setFilters({
+                                        title: "",
+                                        category: undefined,
+                                        status: undefined,
+                                    });
+                                }}
+                            >
+                                清除筛选条件
+                            </Button>
+                        </EmptyContent>
+                    </Empty>
+                ) : filteredPosts.length === 0 ? (
+                    <Empty className="py-12">
+                        <EmptyHeader>
+                            <EmptyMedia variant="icon">
+                                <FileText className="h-6 w-6 text-muted-foreground" />
+                            </EmptyMedia>
+                            <EmptyTitle>暂无文章</EmptyTitle>
+                            <EmptyDescription>
+                                您还没有创建任何文章，点击下方按钮创建您的第一篇文章。
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Link href="/admin/posts/new">
+                                <Button>
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    新建文章
+                                </Button>
+                            </Link>
+                        </EmptyContent>
+                    </Empty>
                 ) : (
-                    <>
-                        {/* 结果统计 */}
-                        <p className="mb-4 text-sm text-secondary">
-                            找到 {filteredPosts.length} 篇文章
-                        </p>
-
-                        {filteredPosts.length > 0 ? (
-                            <>
-                                <PostsList posts={filteredPosts} />
-                            </>
-                        ) : (
-                            <div className="flex items-center justify-center h-full">
-                                <p className="md:text-xl">暂无数据</p>
-                            </div>
-                        )}
-                    </>
+                    <PostsTable posts={filteredPosts} />
                 )}
-            </section>
-            {filteredPosts.length > 0 && (
-                <NumberedPagination
-                    currentPage={currentPage}
-                    totalPages={
-                        pageData
-                            ? pageData.total % pageSize === 0
-                                ? pageData.total / pageSize
-                                : Math.floor(pageData.total / pageSize) + 1
-                            : 0
-                    }
-                    onPageChange={setCurrentPage}
-                    className="self-end mx-4 w-auto mt-4"
-                />
-            )}
-        </TabLayout>
+            </div>
+        </div>
     );
 }

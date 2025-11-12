@@ -2,25 +2,17 @@ import type { Metadata } from "next";
 
 import { siteConfig } from "@/lib/config";
 import PostViewTab from "@/components/dashboard/tabs/PostViewTab";
-import { Suspense } from "react";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export const metadata: Metadata = {
     title: `${siteConfig.title} | 文章管理`,
     description: "后台文章管理",
 };
 
-function PostViewSkeleton() {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold text-center">Loading...</h1>
-        </div>
-    );
-}
-
 export default function PostsPage() {
     return (
-        <Suspense fallback={<PostViewSkeleton />}>
+        <DashboardLayout title="文章管理">
             <PostViewTab />
-        </Suspense>
+        </DashboardLayout>
     );
 }

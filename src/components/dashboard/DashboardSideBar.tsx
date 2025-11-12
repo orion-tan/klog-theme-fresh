@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 
 import {
     Sidebar,
@@ -32,55 +31,37 @@ import { useThemeToggle } from "@/hooks/use-theme-toggle";
 const getSidebarNavItems = (pathname: string) => {
     return [
         {
-            href: "/dashboard",
+            href: "/qwq",
             label: "总览",
-            icon: <Codepen size={24} />,
-            active: pathname === "/dashboard",
+            icon: Codepen,
+            active: pathname === "/qwq",
         },
         {
-            href: "/dashboard/posts",
+            href: "/qwq/posts",
             label: "文章",
-            icon: <FilePen size={24} />,
-            active: pathname.startsWith("/dashboard/posts"),
+            icon: FilePen,
+            active: pathname.startsWith("/qwq/posts"),
         },
         {
-            href: "/dashboard/projects",
+            href: "/qwq/projects",
             label: "项目",
-            icon: <FolderKanban size={24} />,
-            active: pathname.startsWith("/dashboard/projects"),
+            icon: FolderKanban,
+            active: pathname.startsWith("/qwq/projects"),
         },
         {
-            href: "/dashboard/categories",
+            href: "/qwq/categories",
             label: "分类",
-            icon: <Folders size={24} />,
-            active: pathname.startsWith("/dashboard/categories"),
+            icon: Folders,
+            active: pathname.startsWith("/qwq/categories"),
         },
         {
-            href: "/dashboard/tags",
+            href: "/qwq/tags",
             label: "标签",
-            icon: <Tag size={24} />,
-            active: pathname.startsWith("/dashboard/tags"),
+            icon: Tag,
+            active: pathname.startsWith("/qwq/tags"),
         },
     ];
 };
-
-interface NavItemProps {
-    href: string;
-    label: string;
-    icon: React.ReactNode;
-    active: boolean;
-}
-
-function NavItem({ href, label, icon, active }: NavItemProps) {
-    return (
-        <SidebarMenuButton tooltip={label} asChild>
-            <Link href={href}>
-                {icon}
-                {label}
-            </Link>
-        </SidebarMenuButton>
-    );
-}
 
 export default function DashboardSideBar({
     ...props
@@ -88,13 +69,21 @@ export default function DashboardSideBar({
     const pathname = usePathname();
     const { isDarkMode, toggleTheme } = useThemeToggle();
 
+    const sidebarNavItems = getSidebarNavItems(pathname);
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton tooltip="后台管理">
-                            <Folders />
+                        <SidebarMenuButton
+                            size={"lg"}
+                            tooltip="后台管理"
+                            variant={"outline"}
+                        >
+                            <div className="flex items-center justify-center size-8 aspect-square">
+                                <Folders />
+                            </div>
                             <span>后台管理</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -104,9 +93,21 @@ export default function DashboardSideBar({
                 <SidebarGroup>
                     <SidebarGroupLabel>内容管理</SidebarGroupLabel>
                     <SidebarMenu>
-                        {getSidebarNavItems(pathname).map((item) => (
+                        {sidebarNavItems.map((item) => (
                             <SidebarMenuItem key={item.href}>
-                                <NavItem {...item} />
+                                <SidebarMenuButton
+                                    tooltip={item.label}
+                                    isActive={item.active}
+                                    asChild
+                                >
+                                    <Link
+                                        href={item.href}
+                                        aria-label={item.label}
+                                    >
+                                        <item.icon />
+                                        <span>{item.label}</span>
+                                    </Link>
+                                </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
                     </SidebarMenu>
@@ -115,12 +116,12 @@ export default function DashboardSideBar({
                     <SidebarGroupLabel>系统管理</SidebarGroupLabel>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <NavItem
-                                href="/dashboard/settings"
-                                label="设置"
-                                icon={<Settings />}
-                                active={pathname === "/dashboard/settings"}
-                            />
+                            <SidebarMenuButton tooltip="设置" asChild>
+                                <Link href="/dashboard/settings">
+                                    <Settings />
+                                    <span>设置</span>
+                                </Link>
+                            </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
                             <SidebarMenuButton

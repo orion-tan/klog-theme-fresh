@@ -4,10 +4,19 @@
 
 import { useState, useEffect } from "react";
 import type { Category } from "klog-sdk";
-import { Select } from "@/components/ui/select";
-import { FloatingLabelInput } from "@/components/ui/floating-label-input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/mui/input";
+import { Card, CardContent, CardFooter } from "@/components/mui/card";
+import { Combobox } from "@/components/mui/combobox";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/mui/select";
+import { Button } from "@/components/mui/button";
 import { cn } from "@/lib/utils";
+import { Search, X } from "lucide-react";
 
 export interface PostFiltersState {
     title: string;
@@ -58,70 +67,67 @@ export function PostFilters({
     ];
 
     const statusOptions = [
-        { label: "全部状态", value: "" },
         { label: "草稿", value: "draft" },
         { label: "已发布", value: "published" },
         { label: "归档", value: "archived" },
     ];
 
     return (
-        <div
-            className={cn(
-                "border-2 border-border p-4 rounded-md",
-                "flex flex-col gap-4",
-                className
-            )}
-        >
-            {/* 标题 */}
-            <h3 className="text-lg font-bold">筛选条件</h3>
-
-            {/* 筛选条件 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* 标题搜索 */}
-                <FloatingLabelInput
-                    label="搜索标题"
-                    variant="outline"
-                    value={filters.title}
-                    onChange={(e) =>
-                        setFilters({ ...filters, title: e.target.value })
-                    }
-                />
-
-                {/* 分类筛选 */}
-                <Select
-                    label="分类"
-                    value={filters.category || ""}
-                    options={categoryOptions}
-                    onValueChange={(value) =>
-                        setFilters({
-                            ...filters,
-                            category: value ? Number(value) : undefined,
-                        })
-                    }
-                />
-
-                {/* 状态筛选 */}
-                <Select
-                    label="状态"
-                    value={filters.status || ""}
-                    options={statusOptions}
-                    onValueChange={(value) =>
-                        setFilters({
-                            ...filters,
-                            status: value
-                                ? (value as "draft" | "published" | "archived")
-                                : undefined,
-                        })
-                    }
-                />
-            </div>
-
-            {/* 操作按钮 */}
-            <div className="flex gap-2 justify-end">
-                <Button variant="outline" size="sm" onClick={handleReset}>
-                    重置
-                </Button>
-            </div>
-        </div>
+        <>
+            <Card>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-foreground/90" />
+                            <Input
+                                placeholder="搜索标题"
+                                value={filters.title}
+                                onChange={(e) =>
+                                    setFilters({
+                                        ...filters,
+                                        title: e.target.value,
+                                    })
+                                }
+                                className="pl-9"
+                            />
+                        </div>
+                        <div className="relative">
+                            <Combobox
+                                className="w-full"
+                                options={categoryOptions}
+                                onValueChange={(value) =>
+                                    setFilters({ ...filters, category: value })
+                                }
+                                searchPlaceholder="搜索分类"
+                                selectPlaceholder="选择分类"
+                            />
+                        </div>
+                        <div className="relative">
+                            <Select>
+                                <SelectTrigger className="w-full justify-between">
+                                    <SelectValue placeholder="选择状态" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {statusOptions.map((option) => (
+                                        <SelectItem
+                                            key={option.value}
+                                            value={option.value}
+                                        >
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline" onClick={handleReset}>
+                        <X className="h-4 w-4 mr-2" />
+                        重置
+                    </Button>
+                </CardFooter>
+            </Card>
+        </>
     );
 }
